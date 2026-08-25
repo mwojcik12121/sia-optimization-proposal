@@ -1,0 +1,145 @@
+package settings_test
+
+import (
+	"net"
+	"testing"
+
+	"go.sia.tech/core/types"
+	"go.sia.tech/coreutils/chain"
+	"go.sia.tech/coreutils/rhp/v4/siamux"
+	"go.sia.tech/coreutils/wallet"
+	"go.sia.tech/hostd/v2/host/contracts"
+	"go.sia.tech/hostd/v2/host/settings"
+	"go.sia.tech/hostd/v2/host/storage"
+	"go.sia.tech/hostd/v2/index"
+	"go.sia.tech/hostd/v2/internal/testutil"
+	"go.uber.org/zap/zaptest"
+)
+
+func TestAutoAnnounceV2(t *testing.T) {
+	log := zaptest.NewLogger(t)
+	network, genesisBlock := testutil.V2Network()
+	network.HardforkV2.AllowHeight = 2
+	network.HardforkV2.RequireHeight = 3
+	network.HardforkV2.FinalCutHeight = 4
+	hostKey := types.GeneratePrivateKey()
+
+	node := testutil.NewConsensusNode(t, network, genesisBlock, log)
+
+	// TODO: its unfortunate that all these managers need to be created just to
+	// test the auto-announce feature.
+	wm, err := wallet.NewSingleAddressWallet(hostKey, node.Chain, node.Store, &testutil.MockSyncer{})
+	if err != nil {
+		t.Fatal("failed to create wallet:", err)
+	}
+	defer wm.Close()
+
+	vm, err := storage.NewVolumeManager(node.Store, storage.WithLogger(log.Named("storage")))
+	if err != nil {
+		t.Fatal("failed to create volume manager:", err)
+	}
+	defer vm.Close()
+
+	contracts, err := contracts.NewManager(node.Store, vm, node.Chain, wm, contracts.WithRejectAfter(10), contracts.WithRevisionSubmissionBuffer(5), contracts.WithLog(log))
+	if err != nil {
+		t.Fatal("failed to create contracts manager:", err)
+	}
+	defer contracts.Close()
+
+	storage, err := storage.NewVolumeManager(node.Store)
+	if err != nil {
+		t.Fatal("failed to create storage manager:", err)
+	}
+	defer storage.Close()
+
+	sm, err := settings.NewConfigManager(hostKey, node.Store, node.Chain, vm, wm, settings.WithLog(log.Named("settings")), settings.WithAnnounceInterval(50))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sm.Close()
+
+	idx, err := index.NewManager(node.Store, node.Chain, contracts, wm, sm, vm, index.WithLog(log.Named("index")), index.WithBatchSize(1))
+	if err != nil {
+		t.Fatal("failed to create index manager:", err)
+	}
+	defer idx.Close()
+
+	// helper that mines blocks and waits for them to be processed before mining
+	// the next one. This is necessary because test blocks can be extremely fast
+	// and the host may not have time to process the broadcast before the next
+	// block is mined.
+	mineAndSync := func(t *testing.T, numBlocks uint64) {
+		t.Helper()
+
+		// waits for each block to be processed before mining the next one
+		for range numBlocks {
+			testutil.MineBlocks(t, node, wm.Address(), 1)
+			testutil.WaitForSync(t, node.Chain, idx)
+		}
+	}
+
+	assertV2Announcement := func(t *testing.T, expectedHost string, height uint64) {
+		t.Helper()
+
+		index, ok := node.Chain.BestIndex(height)
+		if !ok {
+			t.Fatal("failed to get index")
+		}
+
+		hash, announceIndex, err := node.Store.LastV2AnnouncementHash()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		h := types.NewHasher()
+		types.EncodeSlice(h.E, chain.V2HostAnnouncement{{Protocol: siamux.Protocol, Address: net.JoinHostPort(expectedHost, "9984")}})
+		if err := h.E.Flush(); err != nil {
+			t.Fatal(err)
+		}
+		expectedHash := h.Sum()
+
+		if hash != expectedHash {
+			t.Fatalf("expected hash %v, got %v", expectedHash, hash)
+		} else if announceIndex != index {
+			t.Fatalf("expected index %v, got %v", index, announceIndex)
+		}
+
+		last, err := node.Store.LastAnnouncement()
+		if err != nil {
+			t.Fatal(err)
+		} else if last.Address != "" {
+			// after confirming a v2 announcement, the v1 announcement address
+			// should be empty
+			t.Fatalf("expected no v1 announcement, got %v", last.Address)
+		}
+	}
+
+	// set an old announcement
+	if err := node.Store.UpdateLastAnnouncement(settings.Announcement{
+		Address: "v1.old:9981",
+		Index:   types.ChainIndex{Height: 1},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	s := settings.DefaultSettings
+	s.NetAddress = "foo.bar"
+	sm.UpdateSettings(s)
+
+	// fund the wallet and trigger the first auto-announce
+	mineAndSync(t, network.MaturityDelay+1+1)
+	assertV2Announcement(t, "foo.bar", network.MaturityDelay+1+1) // first maturity height + funds available + confirmation
+	// mine until the next announcement and confirm it
+	lastHeight := node.Chain.Tip().Height
+	mineAndSync(t, 51)
+	assertV2Announcement(t, "foo.bar", lastHeight+50+1) // first confirm + interval + confirmation
+
+	// change the address
+	s.NetAddress = "baz.qux"
+	sm.UpdateSettings(s)
+
+	// trigger and confirm the new announcement
+	lastHeight = node.Chain.Tip().Height
+	mineAndSync(t, 2)
+	assertV2Announcement(t, "baz.qux", lastHeight+2)
+}
