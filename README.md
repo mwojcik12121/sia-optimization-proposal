@@ -11,7 +11,11 @@
 
 ## Components' version
 
-\[to be added]
+* core: 0.21.7
+* coreutils: 0.24.0
+* hostd: 2.10.2
+* renterd: 2.9.3
+* walletd: 2.15.2
 
 ## Notes
 
