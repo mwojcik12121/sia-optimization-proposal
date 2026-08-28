@@ -1,0 +1,31 @@
+-- dbContractMetric
+CREATE TABLE `contracts` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`timestamp` BIGINT NOT NULL,`fcid` blob NOT NULL,`host` blob NOT NULL,`remaining_collateral_lo` BIGINT NOT NULL,`remaining_collateral_hi` BIGINT NOT NULL,`remaining_funds_lo` BIGINT NOT NULL,`remaining_funds_hi` BIGINT NOT NULL,`revision_number` BIGINT NOT NULL,`upload_spending_lo` BIGINT NOT NULL,`upload_spending_hi` BIGINT NOT NULL,`fund_account_spending_lo` BIGINT NOT NULL,`fund_account_spending_hi` BIGINT NOT NULL,`delete_spending_lo` BIGINT NOT NULL,`delete_spending_hi` BIGINT NOT NULL,`sector_roots_spending_lo` BIGINT NOT NULL,`sector_roots_spending_hi` BIGINT NOT NULL);
+CREATE INDEX `idx_sector_roots_spending` ON `contracts`(`sector_roots_spending_lo`,`sector_roots_spending_hi`);
+CREATE INDEX `idx_fund_account_spending` ON `contracts`(`fund_account_spending_lo`,`fund_account_spending_hi`);
+CREATE INDEX `idx_contracts_fc_id` ON `contracts`(`fcid`);
+CREATE INDEX `idx_remaining_collateral` ON `contracts`(`remaining_collateral_lo`,`remaining_collateral_hi`);
+CREATE INDEX `idx_contracts_host` ON `contracts`(`host`);
+CREATE INDEX `idx_contracts_timestamp` ON `contracts`(`timestamp`);
+CREATE INDEX `idx_delete_spending` ON `contracts`(`delete_spending_lo`,`delete_spending_hi`);
+CREATE INDEX `idx_upload_spending` ON `contracts`(`upload_spending_lo`,`upload_spending_hi`);
+CREATE INDEX `idx_contracts_revision_number` ON `contracts`(`revision_number`);
+CREATE INDEX `idx_remaining_funds` ON `contracts`(`remaining_funds_lo`,`remaining_funds_hi`);
+CREATE INDEX `idx_contracts_fcid_timestamp` ON `contracts`(`fcid`,`timestamp`);
+
+-- dbContractPruneMetric
+CREATE TABLE `contract_prunes` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`timestamp` BIGINT NOT NULL,`fcid` blob NOT NULL,`host` blob NOT NULL,`host_version` text,`pruned` BIGINT NOT NULL,`remaining` BIGINT NOT NULL,`duration` integer NOT NULL);
+CREATE INDEX `idx_contract_prunes_duration` ON `contract_prunes`(`duration`);
+CREATE INDEX `idx_contract_prunes_remaining` ON `contract_prunes`(`remaining`);
+CREATE INDEX `idx_contract_prunes_pruned` ON `contract_prunes`(`pruned`);
+CREATE INDEX `idx_contract_prunes_host_version` ON `contract_prunes`(`host_version`);
+CREATE INDEX `idx_contract_prunes_host` ON `contract_prunes`(`host`);
+CREATE INDEX `idx_contract_prunes_fc_id` ON `contract_prunes`(`fcid`);
+CREATE INDEX `idx_contract_prunes_timestamp` ON `contract_prunes`(`timestamp`);
+
+-- dbWalletMetric
+CREATE TABLE `wallets` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`timestamp` BIGINT NOT NULL,`confirmed_lo` BIGINT NOT NULL,`confirmed_hi` BIGINT NOT NULL,`spendable_lo` BIGINT NOT NULL,`spendable_hi` BIGINT NOT NULL,`unconfirmed_lo` BIGINT NOT NULL,`unconfirmed_hi` BIGINT NOT NULL,`immature_lo` BIGINT NOT NULL,`immature_hi` BIGINT NOT NULL);
+CREATE INDEX `idx_unconfirmed` ON `wallets`(`unconfirmed_lo`,`unconfirmed_hi`);
+CREATE INDEX `idx_spendable` ON `wallets`(`spendable_lo`,`spendable_hi`);
+CREATE INDEX `idx_confirmed` ON `wallets`(`confirmed_lo`,`confirmed_hi`);
+CREATE INDEX `idx_wallets_immature` ON `wallets`(`immature_lo`,`immature_hi`);
+CREATE INDEX `idx_wallets_timestamp` ON `wallets`(`timestamp`);

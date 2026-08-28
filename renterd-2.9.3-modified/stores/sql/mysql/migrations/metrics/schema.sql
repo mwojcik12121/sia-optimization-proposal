@@ -1,0 +1,75 @@
+-- dbContractPruneMetric
+CREATE TABLE `contract_prunes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(3) DEFAULT NULL,
+  `timestamp` bigint NOT NULL,
+  `fcid` varbinary(32) NOT NULL,
+  `host` varbinary(32) NOT NULL,
+  `host_version` varchar(191) DEFAULT NULL,
+  `pruned` bigint NOT NULL,
+  `remaining` bigint NOT NULL,
+  `duration` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_contract_prunes_timestamp` (`timestamp`),
+  KEY `idx_contract_prunes_fc_id` (`fcid`),
+  KEY `idx_contract_prunes_host` (`host`),
+  KEY `idx_contract_prunes_host_version` (`host_version`),
+  KEY `idx_contract_prunes_pruned` (`pruned`),
+  KEY `idx_contract_prunes_remaining` (`remaining`),
+  KEY `idx_contract_prunes_duration` (`duration`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- dbContractMetric
+CREATE TABLE `contracts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(3) DEFAULT NULL,
+  `timestamp` bigint NOT NULL,
+  `fcid` varbinary(32) NOT NULL,
+  `host` varbinary(32) NOT NULL,
+  `remaining_collateral_lo` bigint NOT NULL,
+  `remaining_collateral_hi` bigint NOT NULL,
+  `remaining_funds_lo` bigint NOT NULL,
+  `remaining_funds_hi` bigint NOT NULL,
+  `revision_number` bigint NOT NULL,
+  `upload_spending_lo` bigint NOT NULL,
+  `upload_spending_hi` bigint NOT NULL,
+  `fund_account_spending_lo` bigint NOT NULL,
+  `fund_account_spending_hi` bigint NOT NULL,
+  `delete_spending_lo` bigint NOT NULL,
+  `delete_spending_hi` bigint NOT NULL,
+  `sector_roots_spending_lo` bigint NOT NULL,
+  `sector_roots_spending_hi` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_contracts_fc_id` (`fcid`),
+  KEY `idx_contracts_host` (`host`),
+  KEY `idx_remaining_collateral` (`remaining_collateral_lo`,`remaining_collateral_hi`),
+  KEY `idx_contracts_revision_number` (`revision_number`),
+  KEY `idx_upload_spending` (`upload_spending_lo`,`upload_spending_hi`),
+  KEY `idx_fund_account_spending` (`fund_account_spending_lo`,`fund_account_spending_hi`),
+  KEY `idx_contracts_timestamp` (`timestamp`),
+  KEY `idx_remaining_funds` (`remaining_funds_lo`,`remaining_funds_hi`),
+  KEY `idx_delete_spending` (`delete_spending_lo`,`delete_spending_hi`),
+  KEY `idx_sector_roots_spending` (`sector_roots_spending_lo`,`sector_roots_spending_hi`),
+  KEY `idx_contracts_fcid_timestamp` (`fcid`,`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- dbWalletMetric
+CREATE TABLE `wallets` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(3) DEFAULT NULL,
+  `timestamp` bigint NOT NULL,
+  `confirmed_lo` bigint NOT NULL,
+  `confirmed_hi` bigint NOT NULL,
+  `spendable_lo` bigint NOT NULL,
+  `spendable_hi` bigint NOT NULL,
+  `unconfirmed_lo` bigint NOT NULL,
+  `unconfirmed_hi` bigint NOT NULL,
+  `immature_lo` bigint NOT NULL,
+  `immature_hi` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_wallets_timestamp` (`timestamp`),
+  KEY `idx_confirmed` (`confirmed_lo`,`confirmed_hi`),
+  KEY `idx_spendable` (`spendable_lo`,`spendable_hi`),
+  KEY `idx_unconfirmed` (`unconfirmed_lo`,`unconfirmed_hi`),
+  KEY `idx_wallets_immature` (`immature_lo`,`immature_hi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
