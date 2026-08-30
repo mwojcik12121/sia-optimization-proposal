@@ -3,6 +3,7 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${ROOT_DIR}"
+source "${ROOT_DIR}/controls/common.sh"
 [[ ! -f .env ]] || { set -a; source ./.env; set +a; }
 readonly COMPOSE_FILE="${ROOT_DIR}/docker/compose.yaml"
 export COMPOSE_FILE
@@ -21,7 +22,7 @@ USAGE
 }
 
 runner_fail() {
-  printf '[runner][ERROR] %s\n' "$*" >&2
+  test_log ERROR runner "$*"
   exit 1
 }
 
@@ -63,7 +64,7 @@ runner_cleanup() {
   runner_stop_logs
   [[ -z "${STATUS_DIR}" ]] || rm -rf "${STATUS_DIR}"
   for file in "${LOG_FILES[@]:-}"; do
-    [[ -n "${file}" ]] && printf '[runner] Log: %s\n' "${file}" >&2
+    [[ -n "${file}" ]] && test_log INFO runner "log: ${file}"
   done
   exit "${status}"
 }
@@ -71,7 +72,7 @@ runner_cleanup() {
 runner_start_logs() {
   local scenario="$1" timestamp service file
   shift
-  timestamp="$(date -u +'%Y%m%dT%H%M%SZ')"
+  timestamp="$(date +'%Y%m%d_%H%M%S')"
   mkdir -p "${ROOT_DIR}/logs"
   for service in "$@"; do
     file="${ROOT_DIR}/logs/${service}_scenario${scenario}_${timestamp}.log"
@@ -169,7 +170,7 @@ ready_timeout="${RUNNER_READY_TIMEOUT_SECONDS:-7200}"
 
 runtime_tools_image="${RUNTIME_TOOLS_IMAGE:-sia-lab-runtime-tools:bookworm}"
 if ! docker image inspect "${runtime_tools_image}" >/dev/null 2>&1; then
-  printf '[runner] Preparing runtime tools image: %s\n' "${runtime_tools_image}"
+  test_log INFO runner "preparing runtime tools image: ${runtime_tools_image}"
   "${ROOT_DIR}/scripts/image-actions.sh"
   docker image inspect "${runtime_tools_image}" >/dev/null 2>&1 \
     || runner_fail "Runtime tools image was not loaded: ${runtime_tools_image}."

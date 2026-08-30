@@ -12,7 +12,7 @@ readonly SCENARIO_TIMEOUT="${SCENARIO_TIMEOUT_SECONDS:-1800}"
 readonly RELEASE_TIMEOUT="${SCENARIO_RELEASE_TIMEOUT_SECONDS:-900}"
 
 entry_error() {
-  printf '[%s][ERROR] %s\n' "${NODE_NAME:-unknown}" "$*" >&2
+  test_log ERROR entrypoint "$*"
 }
 
 entry_cleanup() {
@@ -79,11 +79,10 @@ config_wait_for_primary 300
 configure_initial_network
 entry_wait_for_release
 
-printf '[%s][scenario] Running scenario %s.\n' "${NODE_NAME}" "${SCENARIO_NUMBER}" >&2
+test_log INFO scenario "running scenario ${SCENARIO_NUMBER}"
 set +e
 timeout --signal=TERM --kill-after=30s "${SCENARIO_TIMEOUT}" bash "${scenario_file}"
 scenario_status=$?
 set -e
-printf '[%s][scenario] Scenario %s exited with status %s.\n' \
-  "${NODE_NAME}" "${SCENARIO_NUMBER}" "${scenario_status}" >&2
+test_log INFO scenario "scenario ${SCENARIO_NUMBER} exited with status ${scenario_status}"
 exit "${scenario_status}"

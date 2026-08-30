@@ -8,7 +8,7 @@ NODE_SEED=''
 NODE_ADDRESS=''
 
 config_error() {
-  printf '[%s][ERROR] %s\n' "${NODE_NAME:-unknown}" "$*" >&2
+  test_log ERROR configure "$*"
 }
 
 _config_yaml_string() {
@@ -438,8 +438,8 @@ configure_initial_network() {
   config_wait_for_all_heights "${target}" "${timeout_seconds}"
   tip="$(_control_bootstrap_api GET /consensus/tip)" || return
   config_verify_final_state "${target}" "$(jq -er '.id' <<<"${tip}")"
-  printf '[%s][READY] Initial private blockchain reached height %s; tip=%s; all selected modern daemons are synchronized.\n' \
-    "${NODE_NAME}" "${target}" "$(jq -r '.id' <<<"${tip}")"
+  test_log INFO bootstrap \
+    "initial private blockchain reached height ${target}; tip=$(jq -r '.id' <<<"${tip}"); all selected modern daemons are synchronized"
   printf '%s\n' "${tip}" >'/run/sia-lab/initial-chain-tip.json'
   touch '/run/sia-lab/initial-chain-ready'
 }

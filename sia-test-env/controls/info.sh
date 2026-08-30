@@ -190,7 +190,7 @@ info_assert_selected_height() {
 _repair_notice() {
   local state="$1"
   shift
-  printf '[%s][repair:%s] %s\n' "${NODE_NAME:-unknown}" "${state}" "$*" >&2
+  test_log INFO "repair:${state}" "$*"
 }
 
 info_renter_migration_snapshot() {

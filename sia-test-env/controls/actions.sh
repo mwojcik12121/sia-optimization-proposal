@@ -214,9 +214,9 @@ action_pause_primary_daemon_for() {
   [[ -r /run/sia-lab/primary.pid ]] || { _control_error 'Primary daemon PID file is missing.'; return 66; }
   pid="$(cat /run/sia-lab/primary.pid)"
   kill -0 "${pid}" 2>/dev/null || { _control_error 'Primary daemon is not running.'; return 69; }
-  printf '[%s][fault] Pausing the primary daemon for %s seconds.\n' "${NODE_NAME}" "${seconds}" >&2
+  test_log INFO action "pausing the primary daemon for ${seconds} seconds"
   kill -STOP "${pid}"
   sleep "${seconds}"
   kill -CONT "${pid}"
-  printf '[%s][fault] Primary daemon resumed.\n' "${NODE_NAME}" >&2
+  test_log INFO action 'primary daemon resumed'
 }

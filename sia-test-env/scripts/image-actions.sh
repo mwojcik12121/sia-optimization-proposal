@@ -3,6 +3,7 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
+source "${ROOT_DIR}/controls/common.sh"
 [[ ! -f .env ]] || { set -a; source ./.env; set +a; }
 
 runtime_image_usage() {
@@ -24,7 +25,7 @@ prepare_runtime_image() {
 load_runtime_image() {
   local archive="$1"
   [[ -f "${archive}" ]] \
-    || { printf '[runtime][ERROR] Missing archive: %s\n' "${archive}" >&2; return 66; }
+    || { test_log ERROR runtime "missing archive: ${archive}"; return 66; }
   docker load -i "${archive}"
 }
 

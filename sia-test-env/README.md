@@ -50,3 +50,5 @@ Every node must recover and reach height 201 before the scenario succeeds.
 * Nodes do not have access to the Internet after setup.
 * Each node uses one CPU and ~3 GB of memory.
 * Runtime chain data is temporary and stored on bounded tmpfs mounts.
+* Node logs are exported as `logs/nodeXX_scenarioN_YYYYMMDD_HHMMSS.log`.
+* Log timestamps use the current Docker host's local time zone. The host's `/etc/localtime` is mounted read-only into each node so native and test-harness messages use the same clock.

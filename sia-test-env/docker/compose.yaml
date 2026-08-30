@@ -3,6 +3,8 @@ name: sia-modern-test
 x-node-base: &node-base
   restart: "no"
   pull_policy: never
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
   cap_add:
     - NET_ADMIN
   security_opt:
@@ -43,6 +45,7 @@ x-common-environment: &common-environment
   BOOTSTRAP_TIMEOUT_SECONDS: "${BOOTSTRAP_TIMEOUT_SECONDS:-7200}"
   SCENARIO_TIMEOUT_SECONDS: "${SCENARIO_TIMEOUT_SECONDS:-1800}"
   SCENARIO_RELEASE_TIMEOUT_SECONDS: "${SCENARIO_RELEASE_TIMEOUT_SECONDS:-900}"
+  TZ: "${TZ:-:/etc/localtime}"
 
 services:
   node01:

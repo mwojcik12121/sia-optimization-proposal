@@ -5,7 +5,7 @@ readonly _SIA_LAB_INPUT_CHAIN='SIA_LAB_INPUT'
 readonly _SIA_LAB_OUTPUT_CHAIN='SIA_LAB_OUTPUT'
 
 network_notice() {
-  printf '[%s][fault] %s\n' "${NODE_NAME:-unknown}" "$*" >&2
+  test_log INFO network "$*"
 }
 
 _network_require_admin() {
