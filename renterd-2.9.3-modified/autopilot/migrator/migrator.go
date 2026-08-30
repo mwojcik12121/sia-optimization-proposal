@@ -3,9 +3,9 @@ package migrator
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math"
 	"net"
-	"sort"
 	"sync"
 	"time"
 
@@ -13,6 +13,7 @@ import (
 	"go.sia.tech/core/types"
 	"go.sia.tech/renterd/v2/alerts"
 	"go.sia.tech/renterd/v2/api"
+	"go.sia.tech/renterd/v2/config"
 	"go.sia.tech/renterd/v2/internal/accounts"
 	"go.sia.tech/renterd/v2/internal/contracts"
 	"go.sia.tech/renterd/v2/internal/download"
@@ -34,6 +35,17 @@ const (
 	// migratorBatchSize is the amount of slabs we fetch for migration from the
 	// slab store at once
 	migratorBatchSize = math.MaxInt // TODO: change once we have a fix for the infinite loop
+
+	// riskRefreshBatchSize bounds database reads, calculations, and writes
+	// influenced by one maintenance pass.
+	riskRefreshBatchSize = 1000
+
+	// slabRiskModelVersion identifies the semantics of LocalEvidenceEstimator.
+	slabRiskModelVersion = 1
+
+	// Sia targets one block every ten minutes. Contract expiry heights are
+	// converted to local scheduling time only; this does not affect consensus.
+	targetBlockTime = 10 * time.Minute
 )
 
 type (
@@ -70,6 +82,9 @@ type (
 		RefreshHealth(ctx context.Context) error
 		Slab(ctx context.Context, key object.EncryptionKey) (object.Slab, error)
 		SlabsForMigration(ctx context.Context, healthCutoff float64, limit int) ([]api.UnhealthySlab, error)
+		RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) ([]api.UnhealthySlab, error)
+		SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) ([]api.SlabRiskInput, error)
+		UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error
 	}
 )
 
@@ -81,6 +96,9 @@ type (
 
 		healthCutoff float64
 		numThreads   uint64
+		riskPolicy   config.SlabRiskSettings
+
+		hostRiskEstimator HostRiskEstimator
 
 		accounts        *accounts.Manager
 		downloadManager *download.Manager
@@ -105,7 +123,7 @@ type (
 	}
 )
 
-func New(ctx context.Context, masterKey [32]byte, alerts alerts.Alerter, ss SlabStore, b Bus, healthCutoff float64, numThreads, downloadMaxOverdrive, uploadMaxOverdrive uint64, downloadOverdriveTimeout, uploadOverdriveTimeout, uploadSectorTimeout, accountsRefillInterval time.Duration, logger *zap.Logger) (*Migrator, error) {
+func New(ctx context.Context, masterKey [32]byte, alerts alerts.Alerter, ss SlabStore, b Bus, healthCutoff float64, riskPolicy config.SlabRiskSettings, numThreads, downloadMaxOverdrive, uploadMaxOverdrive uint64, downloadOverdriveTimeout, uploadOverdriveTimeout, uploadSectorTimeout, accountsRefillInterval time.Duration, logger *zap.Logger) (*Migrator, error) {
 	logger = logger.Named("migrator")
 	m := &Migrator{
 		alerts: alerts,
@@ -114,6 +132,11 @@ func New(ctx context.Context, masterKey [32]byte, alerts alerts.Alerter, ss Slab
 
 		healthCutoff: healthCutoff,
 		numThreads:   numThreads,
+		riskPolicy:   riskPolicy,
+		hostRiskEstimator: LocalEvidenceEstimator{
+			MaxModelAge: riskPolicy.ModelTTL,
+			Version:     slabRiskModelVersion,
+		},
 
 		signalConsensusNotSynced:  make(chan struct{}, 1),
 		signalMaintenanceFinished: make(chan struct{}, 1),
@@ -127,6 +150,8 @@ func New(ctx context.Context, masterKey [32]byte, alerts alerts.Alerter, ss Slab
 
 	if uploadSectorTimeout == 0 {
 		return nil, errors.New("migrator upload sector timeout must be positive")
+	} else if err := validateRiskPolicy(riskPolicy); err != nil {
+		return nil, fmt.Errorf("invalid slab risk policy: %w", err)
 	}
 
 	// derive keys
@@ -153,6 +178,22 @@ func New(ctx context.Context, masterKey [32]byte, alerts alerts.Alerter, ss Slab
 	m.uploadManager = upload.NewManager(ctx, &uk, m.hostManager, mm, b, b, b, uploadMaxOverdrive, uploadOverdriveTimeout, uploadSectorTimeout, logger)
 
 	return m, nil
+}
+
+func validateRiskPolicy(policy config.SlabRiskSettings) error {
+	if !policy.Enabled {
+		return nil
+	}
+	if math.IsNaN(policy.ExitRisk) || math.IsNaN(policy.EnterRisk) || math.IsInf(policy.ExitRisk, 0) || math.IsInf(policy.EnterRisk, 0) || policy.ExitRisk < 0 || policy.ExitRisk >= policy.EnterRisk || policy.EnterRisk > 1 {
+		return errors.New("require 0 <= exitRisk < enterRisk <= 1")
+	} else if policy.SafetyMargin <= 0 {
+		return errors.New("safetyMargin must be positive")
+	} else if policy.ModelTTL <= 0 {
+		return errors.New("modelTTL must be positive")
+	} else if math.IsNaN(policy.FallbackHealthCutoff) || math.IsInf(policy.FallbackHealthCutoff, 0) || policy.FallbackHealthCutoff < -1 || policy.FallbackHealthCutoff > 1 {
+		return errors.New("fallbackHealthCutoff must be between negative one and one")
+	}
+	return nil
 }
 
 func (m *Migrator) Migrate(ctx context.Context) {
@@ -213,6 +254,158 @@ func (m *Migrator) slabMigrationEstimate(remaining int) time.Duration {
 	return time.Duration(totalNumMS) * time.Millisecond
 }
 
+// protectionHorizon is the time during which more failures can occur before a
+// queued repair is expected to finish.
+func (m *Migrator) protectionHorizon(oldestObservationAge time.Duration, queuedSlabsAhead int) time.Duration {
+	queueDelay := m.slabMigrationEstimate(queuedSlabsAhead)
+	repairP90 := m.slabMigrationEstimate(max(1, int(m.numThreads)))
+	return oldestObservationAge + queueDelay + repairP90 + m.riskPolicy.SafetyMargin
+}
+
+func (m *Migrator) refreshSlabRisk(ctx context.Context, input api.SlabRiskInput, queuedSlabsAhead int, currentHeight uint64) (api.SlabRiskUpdate, error) {
+	if len(input.Hosts) != input.UsableShards {
+		return api.SlabRiskUpdate{}, fmt.Errorf("usable-host snapshot changed: health has %d hosts, evidence has %d", input.UsableShards, len(input.Hosts))
+	}
+
+	now := time.Now()
+	var oldestObservationAge time.Duration
+	for _, host := range input.Hosts {
+		if observation := host.LastObservation.Std(); !observation.IsZero() {
+			age := now.Sub(observation)
+			if age > oldestObservationAge {
+				oldestObservationAge = age
+			}
+		}
+	}
+	horizon := m.protectionHorizon(oldestObservationAge, queuedSlabsAhead)
+	validUntil := now.Add(m.riskPolicy.ModelTTL)
+	hostRisks := make([]HostRisk, 0, len(input.Hosts))
+	for _, host := range input.Hosts {
+		contractEnd := now
+		if host.ContractEndHeight > currentHeight {
+			blocks := host.ContractEndHeight - currentHeight
+			if blocks > uint64(math.MaxInt64/int64(targetBlockTime)) {
+				contractEnd = time.Unix(1<<62, 0)
+			} else {
+				contractEnd = now.Add(time.Duration(blocks) * targetBlockTime)
+			}
+		}
+		estimate, err := m.hostRiskEstimator.Estimate(ctx, HostRiskInput{
+			HostKey:               host.HostKey,
+			RecentScanSuccessRate: host.RecentScanSuccessRate,
+			RecentTimeoutRate:     host.RecentTimeoutRate,
+			ConsecutiveFailures:   host.ConsecutiveFailures,
+			LastSuccessfulScan:    host.LastSuccessfulScan.Std(),
+			LastObservation:       host.LastObservation.Std(),
+			ContractEnd:           contractEnd,
+			FailureDomain:         host.FailureDomain,
+		}, horizon)
+		if err != nil {
+			return api.SlabRiskUpdate{}, err
+		} else if estimate.ValidUntil.Before(validUntil) {
+			validUntil = estimate.ValidUntil
+		}
+		hostRisks = append(hostRisks, HostRisk{
+			HostKey:            estimate.HostKey,
+			FailureProbability: estimate.FailureProbability,
+			FailureDomain:      estimate.FailureDomain,
+		})
+	}
+
+	// Correlated scenarios are supported by the calculator, but are empty
+	// until a renter-controlled failure-domain classifier supplies auditable
+	// mutually-exclusive events.
+	var scenarios []DestructionScenario
+	lossRisk, err := ScenarioLossRisk(hostRisks, input.MinShards, scenarios)
+	if err != nil {
+		return api.SlabRiskUpdate{}, err
+	}
+	safeHosts, found, err := SafeUsableHosts(input.TotalShards, input.MinShards, m.riskPolicy.EnterRisk, func(usable int) (float64, error) {
+		projectedHosts := projectRiskForUsableCount(hostRisks, usable)
+		projectedScenarios := projectScenariosForUsableCount(scenarios, projectedHosts)
+		return ScenarioLossRisk(projectedHosts, input.MinShards, projectedScenarios)
+	})
+	if err != nil {
+		return api.SlabRiskUpdate{}, err
+	}
+	recommendedCutoff := 1.0
+	if found {
+		recommendedCutoff = HealthCutoff(input.TotalShards, input.MinShards, safeHosts)
+	}
+
+	return api.SlabRiskUpdate{
+		EncryptionKey:          input.EncryptionKey,
+		UsableShards:           len(hostRisks),
+		LossRisk:               lossRisk,
+		RecommendedCutoff:      recommendedCutoff,
+		RiskValidUntilUnix:     validUntil.Unix(),
+		EstimatedRepairSeconds: max(1, int64(math.Ceil(horizon.Seconds()))),
+		ModelVersion:           m.hostRiskEstimator.ModelVersion(),
+		RiskQueued:             nextRiskQueuedState(input.CurrentlyRiskQueued, lossRisk, m.riskPolicy),
+	}, nil
+}
+
+func (m *Migrator) refreshSlabRisks(ctx context.Context) {
+	if !m.riskPolicy.Enabled {
+		return
+	}
+	state, err := m.bus.ConsensusState(ctx)
+	if err != nil {
+		m.logger.Warnw("slab risk refresh failed; fixed health cutoff will be used", zap.Error(err))
+		return
+	}
+	inputs, err := m.ss.SlabRiskInputs(ctx, api.SlabRiskInputsRequest{
+		Limit:        riskRefreshBatchSize,
+		NowUnix:      time.Now().Unix(),
+		ModelVersion: m.hostRiskEstimator.ModelVersion(),
+	})
+	if err != nil {
+		m.logger.Warnw("slab risk input refresh failed; fixed health cutoff will be used", zap.Error(err))
+		return
+	}
+
+	updates := make([]api.SlabRiskUpdate, 0, len(inputs))
+	for i, input := range inputs {
+		if err := ctx.Err(); err != nil {
+			return
+		}
+		update, err := m.refreshSlabRisk(ctx, input, i, state.BlockHeight)
+		if err != nil {
+			m.logger.Warnw("slab risk calculation failed; fixed health cutoff will be used",
+				zap.Stringer("slab", input.EncryptionKey),
+				zap.Error(err))
+			continue
+		}
+		m.logger.Debugw("calculated slab loss risk",
+			zap.Stringer("slab", input.EncryptionKey),
+			zap.Float64("lossRisk", update.LossRisk),
+			zap.Float64("recommendedCutoff", update.RecommendedCutoff),
+			zap.Int64("riskValidUntil", update.RiskValidUntilUnix),
+			zap.Int64("protectionHorizonSeconds", update.EstimatedRepairSeconds),
+			zap.Bool("riskQueued", update.RiskQueued),
+			zap.Bool("shadow", m.riskPolicy.Shadow))
+		updates = append(updates, update)
+	}
+	if len(updates) > 0 {
+		if err := m.ss.UpdateSlabRisks(ctx, updates); err != nil {
+			m.logger.Warnw("failed to persist slab risks; fixed health cutoff will be used", zap.Error(err))
+		}
+	}
+}
+
+func migrationCandidateOverlap(fixed, risk []api.UnhealthySlab) (overlap int) {
+	fixedKeys := make(map[object.EncryptionKey]struct{}, len(fixed))
+	for _, slab := range fixed {
+		fixedKeys[slab.EncryptionKey] = struct{}{}
+	}
+	for _, slab := range risk {
+		if _, ok := fixedKeys[slab.EncryptionKey]; ok {
+			overlap++
+		}
+	}
+	return
+}
+
 func (m *Migrator) performMigrations(ctx context.Context) {
 	m.logger.Info("performing migrations")
 
@@ -260,11 +453,34 @@ func (m *Migrator) performMigrations(ctx context.Context) {
 
 	// helper to update 'toMigrate'
 	updateToMigrate := func() {
-		// fetch slabs for migration
-		toMigrateNew, err := m.ss.SlabsForMigration(ctx, m.healthCutoff, migratorBatchSize)
+		fixedCutoff := m.healthCutoff
+		if m.riskPolicy.Enabled {
+			fixedCutoff = m.riskPolicy.FallbackHealthCutoff
+		}
+		fixedCandidates, err := m.ss.SlabsForMigration(ctx, fixedCutoff, migratorBatchSize)
 		if err != nil {
 			m.logger.Errorf("failed to fetch slabs for migration, err: %v", err)
 			return
+		}
+		toMigrateNew := fixedCandidates
+		if m.riskPolicy.Enabled {
+			riskCandidates, riskErr := m.ss.RiskAwareSlabsForMigration(ctx, api.MigrationSlabsRequest{
+				FallbackHealthCutoff: m.riskPolicy.FallbackHealthCutoff,
+				EnterRisk:            m.riskPolicy.EnterRisk,
+				Limit:                migratorBatchSize,
+				NowUnix:              time.Now().Unix(),
+				UseRisk:              true,
+			})
+			if riskErr != nil {
+				m.logger.Warnf("failed to fetch risk-aware slabs; using fixed health cutoff: %v", riskErr)
+			} else if m.riskPolicy.Shadow {
+				m.logger.Infow("slab risk shadow candidate comparison",
+					zap.Int("fixedCandidates", len(fixedCandidates)),
+					zap.Int("riskCandidates", len(riskCandidates)),
+					zap.Int("overlap", migrationCandidateOverlap(fixedCandidates, riskCandidates)))
+			} else {
+				toMigrateNew = riskCandidates
+			}
 		}
 		m.logger.Infof("%d potential slabs fetched for migration", len(toMigrateNew))
 
@@ -273,31 +489,23 @@ func (m *Migrator) performMigrations(ctx context.Context) {
 		// require migration anymore. However, slabs that have been in toMigrate
 		// before will be repaired before any new slabs. This is to prevent
 		// starvation.
-		migrateNewMap := make(map[object.EncryptionKey]*api.UnhealthySlab)
-		for i, slab := range toMigrateNew {
-			migrateNewMap[slab.EncryptionKey] = &toMigrateNew[i]
+		migrateNewMap := make(map[object.EncryptionKey]api.UnhealthySlab)
+		for _, slab := range toMigrateNew {
+			migrateNewMap[slab.EncryptionKey] = slab
 		}
-		removed := 0
-		for i := 0; i < len(toMigrate)-removed; {
-			slab := toMigrate[i]
-			if _, exists := migrateNewMap[slab.EncryptionKey]; exists {
-				delete(migrateNewMap, slab.EncryptionKey) // delete from map to leave only new slabs
-				i++
-			} else {
-				toMigrate[i] = toMigrate[len(toMigrate)-1-removed]
-				removed++
+		retained := toMigrate[:0]
+		for _, slab := range toMigrate {
+			if current, exists := migrateNewMap[slab.EncryptionKey]; exists {
+				retained = append(retained, current)
+				delete(migrateNewMap, slab.EncryptionKey)
 			}
 		}
-		toMigrate = toMigrate[:len(toMigrate)-removed]
-		for _, slab := range migrateNewMap {
-			toMigrate = append(toMigrate, *slab)
+		toMigrate = retained
+		for _, slab := range toMigrateNew {
+			if _, isNew := migrateNewMap[slab.EncryptionKey]; isNew {
+				toMigrate = append(toMigrate, slab)
+			}
 		}
-
-		// sort the newly added slabs by health
-		newSlabs := toMigrate[len(toMigrate)-len(migrateNewMap):]
-		sort.Slice(newSlabs, func(i, j int) bool {
-			return newSlabs[i].Health < newSlabs[j].Health
-		})
 	}
 
 	// unregister the ongoing migrations alert when we're done
@@ -321,6 +529,7 @@ OUTER:
 				m.logger.Errorf("failed to dismiss alert: %v", err)
 			}
 			m.logger.Infof("recomputed slab health in %v", time.Since(start))
+			m.refreshSlabRisks(ctx)
 			updateToMigrate()
 		}
 

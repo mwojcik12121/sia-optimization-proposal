@@ -116,6 +116,15 @@ var cfg = config.Config{
 		MigratorUploadMaxOverdrive:       5,
 		MigratorUploadOverdriveTimeout:   3 * time.Second,
 		MigratorUploadSectorTimeout:      time.Minute,
+		SlabRisk: config.SlabRiskSettings{
+			Enabled:              false,
+			Shadow:               true,
+			EnterRisk:            1e-6,
+			ExitRisk:             2.5e-7,
+			SafetyMargin:         time.Hour,
+			ModelTTL:             6 * time.Hour,
+			FallbackHealthCutoff: 0.75,
+		},
 
 		RevisionBroadcastInterval: 7 * 24 * time.Hour,
 		RevisionSubmissionBuffer:  150, // 144 + 6 blocks leeway
@@ -260,6 +269,13 @@ func parseCLIFlags() {
 	flag.Uint64Var(&cfg.Autopilot.MigratorUploadMaxOverdrive, "autopilot.migratorUploadMaxOverdrive", cfg.Autopilot.MigratorUploadMaxOverdrive, "Max overdrive workers for migration uploads")
 	flag.DurationVar(&cfg.Autopilot.MigratorUploadOverdriveTimeout, "autopilot.migratorUploadOverdriveTimeout", cfg.Autopilot.MigratorUploadOverdriveTimeout, "Timeout for overdriving migration uploads")
 	flag.DurationVar(&cfg.Autopilot.MigratorUploadSectorTimeout, "autopilot.migratorUploadSectorTimeout", cfg.Autopilot.MigratorUploadSectorTimeout, "Timeout for individual sectors of a migration upload")
+	flag.BoolVar(&cfg.Autopilot.SlabRisk.Enabled, "autopilot.slabRisk.enabled", cfg.Autopilot.SlabRisk.Enabled, "Enables slab loss-risk calculation")
+	flag.BoolVar(&cfg.Autopilot.SlabRisk.Shadow, "autopilot.slabRisk.shadow", cfg.Autopilot.SlabRisk.Shadow, "Compares risk-aware and fixed-cutoff candidates without enforcing risk-aware scheduling")
+	flag.Float64Var(&cfg.Autopilot.SlabRisk.EnterRisk, "autopilot.slabRisk.enterRisk", cfg.Autopilot.SlabRisk.EnterRisk, "Loss-risk threshold for entering the migration queue")
+	flag.Float64Var(&cfg.Autopilot.SlabRisk.ExitRisk, "autopilot.slabRisk.exitRisk", cfg.Autopilot.SlabRisk.ExitRisk, "Loss-risk threshold for leaving the migration queue")
+	flag.DurationVar(&cfg.Autopilot.SlabRisk.SafetyMargin, "autopilot.slabRisk.safetyMargin", cfg.Autopilot.SlabRisk.SafetyMargin, "Safety margin added to the slab protection horizon")
+	flag.DurationVar(&cfg.Autopilot.SlabRisk.ModelTTL, "autopilot.slabRisk.modelTTL", cfg.Autopilot.SlabRisk.ModelTTL, "Maximum age of slab risk estimates and host evidence")
+	flag.Float64Var(&cfg.Autopilot.SlabRisk.FallbackHealthCutoff, "autopilot.slabRisk.fallbackHealthCutoff", cfg.Autopilot.SlabRisk.FallbackHealthCutoff, "Health cutoff used when slab risk is missing, stale, or invalid")
 
 	// s3
 	flag.StringVar(&cfg.S3.Address, "s3.address", cfg.S3.Address, "Address for serving S3 API (overrides with RENTERD_S3_ADDRESS)")

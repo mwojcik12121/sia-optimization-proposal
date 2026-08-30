@@ -870,6 +870,14 @@ func (tx *MainDatabaseTx) SlabsForMigration(ctx context.Context, healthCutoff fl
 	return ssql.SlabsForMigration(ctx, tx, healthCutoff, limit)
 }
 
+func (tx *MainDatabaseTx) RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) ([]api.UnhealthySlab, error) {
+	return ssql.RiskAwareSlabsForMigration(ctx, tx, req)
+}
+
+func (tx *MainDatabaseTx) SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) ([]api.SlabRiskInput, error) {
+	return ssql.SlabRiskInputs(ctx, tx, req)
+}
+
 func (tx *MainDatabaseTx) Tip(ctx context.Context) (types.ChainIndex, error) {
 	return ssql.Tip(ctx, tx.Tx)
 }
@@ -1046,13 +1054,17 @@ func (tx *MainDatabaseTx) UpdateSlab(ctx context.Context, key object.EncryptionK
 	return ssql.UpdateSlab(ctx, tx, key, sectors)
 }
 
+func (tx *MainDatabaseTx) UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error {
+	return ssql.UpdateSlabRisks(ctx, tx, updates)
+}
+
 func (tx *MainDatabaseTx) UpdateSlabHealth(ctx context.Context, limit int64, minDuration, maxDuration time.Duration) (int64, error) {
 	now := time.Now()
 	if err := ssql.PrepareSlabHealth(ctx, tx, limit, now); err != nil {
 		return 0, fmt.Errorf("failed to compute slab health: %w", err)
 	}
 
-	res, err := tx.Exec(ctx, "UPDATE slabs sla INNER JOIN slabs_health h ON sla.id = h.id SET sla.health = h.health, health_valid_until = (FLOOR(? + RAND() * (? - ?)))",
+	res, err := tx.Exec(ctx, "UPDATE slabs sla INNER JOIN slabs_health h ON sla.id = h.id SET sla.health = h.health, sla.usable_shards = h.usable_shards, health_valid_until = (FLOOR(? + RAND() * (? - ?)))",
 		now.Add(minDuration).Unix(), maxDuration.Seconds(), minDuration.Seconds())
 	if err != nil {
 		return 0, fmt.Errorf("failed to update slab health: %w", err)

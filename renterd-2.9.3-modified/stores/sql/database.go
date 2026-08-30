@@ -302,6 +302,13 @@ type (
 		// than or equal to 'healthCutoff'
 		SlabsForMigration(ctx context.Context, healthCutoff float64, limit int) ([]api.UnhealthySlab, error)
 
+		// RiskAwareSlabsForMigration returns slabs selected and ordered using a
+		// fresh loss-risk estimate, with fixed-cutoff fallback.
+		RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) ([]api.UnhealthySlab, error)
+
+		// SlabRiskInputs returns a bounded batch of stale risk inputs.
+		SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) ([]api.SlabRiskInput, error)
+
 		// Tip returns the sync height.
 		Tip(ctx context.Context) (types.ChainIndex, error)
 
@@ -344,6 +351,9 @@ type (
 		// - invalidate health_valid_until
 		// - adds a contract<->sector link for the given sectors
 		UpdateSlab(ctx context.Context, key object.EncryptionKey, sectors []api.UploadedSector) error
+
+		// UpdateSlabRisks atomically persists a batch of slab risk estimates.
+		UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error
 
 		// UpdateSlabHealth updates the health of up to 'limit' slab in the
 		// database if their health is not valid anymore. A random interval

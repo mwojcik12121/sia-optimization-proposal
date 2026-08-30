@@ -10,6 +10,18 @@ import (
 )
 
 type (
+	// SlabRiskSettings controls the renter-local slab-loss risk model. The
+	// model only affects migration scheduling and never reconstruction rules.
+	SlabRiskSettings struct {
+		Enabled              bool          `yaml:"enabled,omitempty"`
+		Shadow               bool          `yaml:"shadow,omitempty"`
+		EnterRisk            float64       `yaml:"enterRisk,omitempty"`
+		ExitRisk             float64       `yaml:"exitRisk,omitempty"`
+		SafetyMargin         time.Duration `yaml:"safetyMargin,omitempty"`
+		ModelTTL             time.Duration `yaml:"modelTTL,omitempty"`
+		FallbackHealthCutoff float64       `yaml:"fallbackHealthCutoff,omitempty"`
+	}
+
 	// Config contains the configuration for a renterd node
 	Config struct {
 		Seed          string `yaml:"seed,omitempty"`
@@ -151,6 +163,7 @@ type (
 		ScannerInterval                  time.Duration `yaml:"scannerInterval,omitempty"`
 		ScannerBatchSize                 uint64        `yaml:"scannerBatchSize,omitempty"`
 		ScannerNumThreads                uint64        `yaml:"scannerNumThreads,omitempty"`
+		SlabRisk                         SlabRiskSettings `yaml:"slabRisk,omitempty"`
 	}
 )
 

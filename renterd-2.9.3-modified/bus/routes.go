@@ -1456,12 +1456,40 @@ func (b *Bus) slabsMigrationHandlerPOST(jc jape.Context) {
 		return
 	}
 
-	slabs, err := b.store.SlabsForMigration(jc.Request.Context(), msr.HealthCutoff, msr.Limit)
+	var (
+		slabs []api.UnhealthySlab
+		err   error
+	)
+	if msr.UseRisk {
+		slabs, err = b.store.RiskAwareSlabsForMigration(jc.Request.Context(), msr)
+	} else {
+		slabs, err = b.store.SlabsForMigration(jc.Request.Context(), msr.HealthCutoff, msr.Limit)
+	}
 	if jc.Check("couldn't fetch slabs for migration", err) != nil {
 		return
 	}
 
 	jc.Encode(api.SlabsForMigrationResponse{Slabs: slabs})
+}
+
+func (b *Bus) slabsRisksHandlerPOST(jc jape.Context) {
+	var req api.SlabRiskInputsRequest
+	if jc.Decode(&req) != nil {
+		return
+	}
+	inputs, err := b.store.SlabRiskInputs(jc.Request.Context(), req)
+	if jc.Check("couldn't fetch slab risk inputs", err) != nil {
+		return
+	}
+	jc.Encode(inputs)
+}
+
+func (b *Bus) slabsRisksHandlerPUT(jc jape.Context) {
+	var updates []api.SlabRiskUpdate
+	if jc.Decode(&updates) != nil {
+		return
+	}
+	jc.Check("couldn't update slab risks", b.store.UpdateSlabRisks(jc.Request.Context(), updates))
 }
 
 func (b *Bus) slabsPartialHandlerGET(jc jape.Context) {

@@ -110,6 +110,13 @@ CREATE TABLE `slabs` (
   `key` binary(33) NOT NULL,
   `min_shards` tinyint unsigned DEFAULT NULL,
   `total_shards` tinyint unsigned DEFAULT NULL,
+  `usable_shards` int NOT NULL DEFAULT '0',
+  `loss_risk` double DEFAULT NULL,
+  `recommended_cutoff` double DEFAULT NULL,
+  `risk_valid_until` bigint NOT NULL DEFAULT '0',
+  `estimated_repair_seconds` bigint NOT NULL DEFAULT '0',
+  `risk_model_version` int unsigned NOT NULL DEFAULT '0',
+  `risk_queued` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`),
   KEY `idx_slabs_min_shards` (`min_shards`),
@@ -117,6 +124,7 @@ CREATE TABLE `slabs` (
   KEY `idx_slabs_db_buffered_slab_id` (`db_buffered_slab_id`),
   KEY `idx_slabs_health` (`health`),
   KEY `idx_slabs_health_valid_until` (`health_valid_until`),
+  KEY `slabs_risk_priority_idx` (`risk_valid_until`,`loss_risk` DESC,`health` ASC),
   CONSTRAINT `fk_buffered_slabs_db_slab` FOREIGN KEY (`db_buffered_slab_id`) REFERENCES `buffered_slabs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

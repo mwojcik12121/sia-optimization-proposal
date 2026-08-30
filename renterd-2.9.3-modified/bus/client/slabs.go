@@ -118,6 +118,24 @@ func (c *Client) SlabsForMigration(ctx context.Context, healthCutoff float64, li
 	return usr.Slabs, nil
 }
 
+// RiskAwareSlabsForMigration returns candidates selected using fresh loss risk
+// and conservative fixed-cutoff fallback.
+func (c *Client) RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) (slabs []api.UnhealthySlab, err error) {
+	req.UseRisk = true
+	var response api.SlabsForMigrationResponse
+	err = c.c.POST(ctx, "/slabs/migration", req, &response)
+	return response.Slabs, err
+}
+
+func (c *Client) SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) (inputs []api.SlabRiskInput, err error) {
+	err = c.c.POST(ctx, "/slabs/risks", req, &inputs)
+	return
+}
+
+func (c *Client) UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error {
+	return c.c.PUT(ctx, "/slabs/risks", updates, nil)
+}
+
 // UpdateSlab updates a slab with given key, adding the given contract sector
 // links to the database.
 func (c *Client) UpdateSlab(ctx context.Context, key object.EncryptionKey, sectors []api.UploadedSector) (err error) {

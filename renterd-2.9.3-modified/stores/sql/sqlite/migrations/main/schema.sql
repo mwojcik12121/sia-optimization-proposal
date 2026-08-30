@@ -65,10 +65,11 @@ CREATE UNIQUE INDEX `idx_multipart_uploads_upload_id` ON `multipart_uploads`(`up
 CREATE TABLE `buffered_slabs` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`filename` text);
 
 -- dbSlab
-CREATE TABLE `slabs` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`db_buffered_slab_id` integer DEFAULT NULL,`health` real NOT NULL DEFAULT 1,`health_valid_until` integer NOT NULL DEFAULT 0,`key` blob NOT NULL UNIQUE,`min_shards` integer,`total_shards` integer,CONSTRAINT `fk_buffered_slabs_db_slab` FOREIGN KEY (`db_buffered_slab_id`) REFERENCES `buffered_slabs`(`id`));
+CREATE TABLE `slabs` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`db_buffered_slab_id` integer DEFAULT NULL,`health` real NOT NULL DEFAULT 1,`health_valid_until` integer NOT NULL DEFAULT 0,`key` blob NOT NULL UNIQUE,`min_shards` integer,`total_shards` integer,`usable_shards` integer NOT NULL DEFAULT 0,`loss_risk` real,`recommended_cutoff` real,`risk_valid_until` integer NOT NULL DEFAULT 0,`estimated_repair_seconds` integer NOT NULL DEFAULT 0,`risk_model_version` integer NOT NULL DEFAULT 0,`risk_queued` integer NOT NULL DEFAULT 0,CONSTRAINT `fk_buffered_slabs_db_slab` FOREIGN KEY (`db_buffered_slab_id`) REFERENCES `buffered_slabs`(`id`));
 CREATE INDEX `idx_slabs_total_shards` ON `slabs`(`total_shards`);
 CREATE INDEX `idx_slabs_min_shards` ON `slabs`(`min_shards`);
 CREATE INDEX `idx_slabs_health_valid_until` ON `slabs`(`health_valid_until`);
+CREATE INDEX `slabs_risk_priority_idx` ON `slabs`(`risk_valid_until`,`loss_risk` DESC,`health` ASC);
 CREATE INDEX `idx_slabs_health` ON `slabs`(`health`);
 CREATE INDEX `idx_slabs_db_buffered_slab_id` ON `slabs`(`db_buffered_slab_id`);
 

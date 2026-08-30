@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	"go.sia.tech/core/types"
 	"go.sia.tech/renterd/v2/object"
 )
@@ -23,6 +25,48 @@ type (
 	UnhealthySlab struct {
 		EncryptionKey object.EncryptionKey `json:"encryptionKey"`
 		Health        float64              `json:"health"`
+
+		LossRisk               float64     `json:"lossRisk"`
+		RecommendedCutoff      float64     `json:"recommendedCutoff"`
+		RiskValidUntil         TimeRFC3339 `json:"riskValidUntil"`
+		EstimatedRepairDuration DurationMS  `json:"estimatedRepairDuration"`
+		Reason                  string      `json:"reason"`
+	}
+
+	// SlabRiskHost contains renter-observed evidence for one distinct host
+	// currently contributing a usable shard to a slab.
+	SlabRiskHost struct {
+		HostKey               types.PublicKey `json:"hostKey"`
+		RecentScanSuccessRate float64         `json:"recentScanSuccessRate"`
+		RecentTimeoutRate     float64         `json:"recentTimeoutRate"`
+		ConsecutiveFailures   uint64          `json:"consecutiveFailures"`
+		LastSuccessfulScan    TimeRFC3339     `json:"lastSuccessfulScan"`
+		LastObservation       TimeRFC3339     `json:"lastObservation"`
+		ContractEndHeight     uint64          `json:"contractEndHeight"`
+		FailureDomain         string          `json:"failureDomain,omitempty"`
+	}
+
+	// SlabRiskInput is a consistent database snapshot used to refresh one
+	// slab's cached loss-risk estimate.
+	SlabRiskInput struct {
+		EncryptionKey      object.EncryptionKey `json:"encryptionKey"`
+		MinShards          int                  `json:"minShards"`
+		TotalShards        int                  `json:"totalShards"`
+		UsableShards       int                  `json:"usableShards"`
+		Hosts              []SlabRiskHost       `json:"hosts"`
+		CurrentlyRiskQueued bool                 `json:"currentlyRiskQueued"`
+	}
+
+	// SlabRiskUpdate is the durable result of one slab-risk calculation.
+	SlabRiskUpdate struct {
+		EncryptionKey          object.EncryptionKey `json:"encryptionKey"`
+		UsableShards           int                  `json:"usableShards"`
+		LossRisk               float64              `json:"lossRisk"`
+		RecommendedCutoff      float64              `json:"recommendedCutoff"`
+		RiskValidUntilUnix     int64                `json:"riskValidUntilUnix"`
+		EstimatedRepairSeconds int64                `json:"estimatedRepairSeconds"`
+		ModelVersion           uint32               `json:"modelVersion"`
+		RiskQueued             bool                 `json:"riskQueued"`
 	}
 
 	UploadedPackedSlab struct {
@@ -44,8 +88,19 @@ type (
 
 	// MigrationSlabsRequest is the request type for the /slabs/migration endpoint.
 	MigrationSlabsRequest struct {
-		HealthCutoff float64 `json:"healthCutoff"`
-		Limit        int     `json:"limit"`
+		// HealthCutoff is retained for compatibility with pre-risk clients.
+		HealthCutoff         float64 `json:"healthCutoff,omitempty"`
+		FallbackHealthCutoff float64 `json:"fallbackHealthCutoff,omitempty"`
+		EnterRisk            float64 `json:"enterRisk,omitempty"`
+		Limit                int     `json:"limit"`
+		NowUnix              int64   `json:"nowUnix,omitempty"`
+		UseRisk              bool    `json:"useRisk,omitempty"`
+	}
+
+	SlabRiskInputsRequest struct {
+		Limit        int    `json:"limit"`
+		NowUnix      int64  `json:"nowUnix"`
+		ModelVersion uint32 `json:"modelVersion"`
 	}
 
 	PackedSlabsRequestGET struct {
@@ -66,6 +121,11 @@ type (
 	// UpdateSlabRequest is the request type for the PUT /slab/:key endpoint.
 	UpdateSlabRequest []UploadedSector
 )
+
+// RiskValidUntilTime converts a persisted Unix timestamp to the API time type.
+func RiskValidUntilTime(unix int64) TimeRFC3339 {
+	return TimeRFC3339(time.Unix(unix, 0).UTC())
+}
 
 func (s UploadedPackedSlab) Contracts() (fcids []types.FileContractID) {
 	seen := make(map[types.FileContractID]struct{})

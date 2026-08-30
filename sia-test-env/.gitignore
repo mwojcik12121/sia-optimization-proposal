@@ -1,0 +1,4 @@
+bin/*
+!bin/README.md
+logs/*.log
+!logs/README.md

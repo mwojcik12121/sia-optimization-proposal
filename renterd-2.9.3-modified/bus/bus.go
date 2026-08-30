@@ -254,8 +254,11 @@ type (
 		FetchPartialSlab(ctx context.Context, key object.EncryptionKey, offset, length uint32) ([]byte, error)
 		Slab(ctx context.Context, key object.EncryptionKey) (object.Slab, error)
 		SlabsForMigration(ctx context.Context, healthCutoff float64, limit int) ([]api.UnhealthySlab, error)
+		RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) ([]api.UnhealthySlab, error)
+		SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) ([]api.SlabRiskInput, error)
 		RefreshHealth(ctx context.Context) error
 		UpdateSlab(ctx context.Context, key object.EncryptionKey, sectors []api.UploadedSector) error
+		UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error
 	}
 
 	// A MetricsStore stores metrics.
@@ -467,6 +470,8 @@ func (b *Bus) Handler() http.Handler {
 		"POST   /slabbuffer/fetch": b.packedSlabsHandlerFetchPOST,
 
 		"POST   /slabs/migration":     b.slabsMigrationHandlerPOST,
+		"POST   /slabs/risks":         b.slabsRisksHandlerPOST,
+		"PUT    /slabs/risks":         b.slabsRisksHandlerPUT,
 		"GET    /slabs/partial/:key":  b.slabsPartialHandlerGET,
 		"POST   /slabs/partial":       b.slabsPartialHandlerPOST,
 		"POST   /slabs/refreshhealth": b.slabsRefreshHealthHandlerPOST,

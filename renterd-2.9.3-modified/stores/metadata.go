@@ -527,6 +527,34 @@ func (s *SQLStore) SlabsForMigration(ctx context.Context, healthCutoff float64, 
 	return
 }
 
+func (s *SQLStore) RiskAwareSlabsForMigration(ctx context.Context, req api.MigrationSlabsRequest) (slabs []api.UnhealthySlab, err error) {
+	if req.Limit <= -1 {
+		req.Limit = math.MaxInt
+	}
+	err = s.db.Transaction(ctx, func(tx sql.DatabaseTx) error {
+		slabs, err = tx.RiskAwareSlabsForMigration(ctx, req)
+		return err
+	})
+	return
+}
+
+func (s *SQLStore) SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsRequest) (inputs []api.SlabRiskInput, err error) {
+	if req.Limit <= -1 {
+		req.Limit = math.MaxInt
+	}
+	err = s.db.Transaction(ctx, func(tx sql.DatabaseTx) error {
+		inputs, err = tx.SlabRiskInputs(ctx, req)
+		return err
+	})
+	return
+}
+
+func (s *SQLStore) UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error {
+	return s.db.Transaction(ctx, func(tx sql.DatabaseTx) error {
+		return tx.UpdateSlabRisks(ctx, updates)
+	})
+}
+
 // ObjectMetadata returns an object's metadata
 func (s *SQLStore) ObjectMetadata(ctx context.Context, bucket, key string) (obj api.Object, err error) {
 	err = s.db.Transaction(ctx, func(tx sql.DatabaseTx) error {

@@ -1062,6 +1062,7 @@ func PrepareSlabHealth(ctx context.Context, tx sql.Tx, limit int64, now time.Tim
 CREATE TEMPORARY TABLE slabs_health AS
 	SELECT
 		id,
+		unique_hosts AS usable_shards,
 		CASE WHEN no_redundancy THEN CASE WHEN unique_hosts < min_shards THEN -1 ELSE 1 END ELSE (unique_hosts - min_shards) / (total_shards - min_shards) END as health
 	FROM (
 		SELECT
@@ -1956,6 +1957,277 @@ func SlabsForMigration(ctx context.Context, tx sql.Tx, healthCutoff float64, lim
 		slabs = append(slabs, slab)
 	}
 	return slabs, nil
+}
+
+// RiskAwareSlabsForMigration returns migration candidates ordered by the hard
+// reconstruction boundary, fresh loss risk, and finally structural health.
+// Missing or stale risk falls back to the released fixed-cutoff policy.
+func RiskAwareSlabsForMigration(ctx context.Context, tx sql.Tx, req api.MigrationSlabsRequest) ([]api.UnhealthySlab, error) {
+	if req.Limit <= 0 {
+		return nil, errors.New("migration slab limit must be positive")
+	} else if req.NowUnix <= 0 {
+		return nil, errors.New("migration request time must be positive")
+	} else if math.IsNaN(req.EnterRisk) || math.IsInf(req.EnterRisk, 0) || req.EnterRisk < 0 || req.EnterRisk > 1 {
+		return nil, errors.New("enter risk must be between zero and one")
+	} else if math.IsNaN(req.FallbackHealthCutoff) || math.IsInf(req.FallbackHealthCutoff, 0) || req.FallbackHealthCutoff < -1 || req.FallbackHealthCutoff > 1 {
+		return nil, errors.New("fallback health cutoff must be between negative one and one")
+	}
+
+	rows, err := tx.Query(ctx, `
+		SELECT
+			sla.key,
+			sla.health,
+			COALESCE(sla.loss_risk, 1.0),
+			COALESCE(sla.recommended_cutoff, ?),
+			sla.risk_valid_until,
+			sla.estimated_repair_seconds,
+			CASE
+				WHEN sla.usable_shards <= sla.min_shards THEN 'recovery-boundary'
+				WHEN sla.risk_valid_until > ? AND (sla.risk_queued = 1 OR sla.loss_risk >= ?) THEN 'loss-risk'
+				WHEN sla.risk_valid_until > ? AND sla.health <= sla.recommended_cutoff THEN 'recommended-cutoff'
+				ELSE 'fixed-cutoff-fallback'
+			END
+		FROM slabs sla
+		WHERE
+			sla.db_buffered_slab_id IS NULL
+			AND sla.health_valid_until > ?
+			AND (
+				sla.usable_shards <= sla.min_shards
+				OR (
+					sla.risk_valid_until > ?
+					AND (
+						sla.risk_queued = 1
+						OR sla.loss_risk >= ?
+						OR sla.health <= sla.recommended_cutoff
+					)
+				)
+				OR (sla.risk_valid_until <= ? AND sla.health <= ?)
+			)
+		ORDER BY
+			CASE WHEN sla.usable_shards <= sla.min_shards THEN 0 ELSE 1 END ASC,
+			CASE WHEN sla.risk_valid_until > ? THEN sla.loss_risk ELSE -1 END DESC,
+			sla.health ASC
+		LIMIT ?
+	`,
+		req.FallbackHealthCutoff,
+		req.NowUnix, req.EnterRisk,
+		req.NowUnix,
+		req.NowUnix,
+		req.NowUnix, req.EnterRisk,
+		req.NowUnix, req.FallbackHealthCutoff,
+		req.NowUnix,
+		req.Limit,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch risk-aware migration slabs: %w", err)
+	}
+	defer rows.Close()
+
+	var slabs []api.UnhealthySlab
+	for rows.Next() {
+		var slab api.UnhealthySlab
+		var riskValidUntil, estimatedRepairSeconds int64
+		if err := rows.Scan(
+			(*EncryptionKey)(&slab.EncryptionKey),
+			&slab.Health,
+			&slab.LossRisk,
+			&slab.RecommendedCutoff,
+			&riskValidUntil,
+			&estimatedRepairSeconds,
+			&slab.Reason,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan risk-aware migration slab: %w", err)
+		}
+		slab.RiskValidUntil = api.RiskValidUntilTime(riskValidUntil)
+		slab.EstimatedRepairDuration = api.DurationMS(time.Duration(estimatedRepairSeconds) * time.Second)
+		slabs = append(slabs, slab)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate risk-aware migration slabs: %w", err)
+	}
+	return slabs, nil
+}
+
+// SlabRiskInputs returns a bounded batch of expired or old-version slab risk
+// inputs. Slab metadata and its distinct usable host evidence are read in the
+// caller's transaction.
+func SlabRiskInputs(ctx context.Context, tx sql.Tx, req api.SlabRiskInputsRequest) ([]api.SlabRiskInput, error) {
+	if req.Limit <= 0 {
+		return nil, errors.New("slab risk input limit must be positive")
+	} else if req.NowUnix <= 0 {
+		return nil, errors.New("slab risk input time must be positive")
+	} else if req.ModelVersion == 0 {
+		return nil, errors.New("slab risk model version must be positive")
+	}
+
+	rows, err := tx.Query(ctx, `
+		SELECT id, key, min_shards, total_shards, usable_shards, risk_queued
+		FROM slabs
+		WHERE db_buffered_slab_id IS NULL
+			AND (risk_valid_until <= ? OR risk_model_version <> ?)
+		ORDER BY risk_valid_until ASC, id ASC
+		LIMIT ?
+	`, req.NowUnix, req.ModelVersion, req.Limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch slab risk inputs: %w", err)
+	}
+
+	type slabInput struct {
+		id int64
+		api.SlabRiskInput
+	}
+	var inputs []slabInput
+	for rows.Next() {
+		var input slabInput
+		if err := rows.Scan(
+			&input.id,
+			(*EncryptionKey)(&input.EncryptionKey),
+			&input.MinShards,
+			&input.TotalShards,
+			&input.UsableShards,
+			&input.CurrentlyRiskQueued,
+		); err != nil {
+			_ = rows.Close()
+			return nil, fmt.Errorf("failed to scan slab risk input: %w", err)
+		}
+		inputs = append(inputs, input)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close slab risk input rows: %w", err)
+	}
+
+	for i := range inputs {
+		hostRows, err := tx.Query(ctx, `
+			SELECT
+				c.host_key,
+				COALESCE(h.total_scans, 0),
+				COALESCE(h.last_scan, 0),
+				COALESCE(h.last_scan_success, 0),
+				COALESCE(h.second_to_last_scan_success, 0),
+				COALESCE(h.recent_scan_failures, 0),
+				COALESCE(h.successful_interactions, 0),
+				COALESCE(h.failed_interactions, 0),
+				MIN(c.window_end)
+			FROM sectors s
+			INNER JOIN contract_sectors cs ON cs.db_sector_id = s.id
+			INNER JOIN contracts c ON c.id = cs.db_contract_id AND c.usability = ?
+			INNER JOIN hosts h ON h.id = c.host_id
+			WHERE s.db_slab_id = ?
+			GROUP BY
+				c.host_key,
+				h.total_scans,
+				h.last_scan,
+				h.last_scan_success,
+				h.second_to_last_scan_success,
+				h.recent_scan_failures,
+				h.successful_interactions,
+				h.failed_interactions
+			ORDER BY c.host_key
+		`, contractUsabilityGood, inputs[i].id)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch host evidence for slab %v: %w", inputs[i].EncryptionKey, err)
+		}
+		for hostRows.Next() {
+			var (
+				host                  api.SlabRiskHost
+				totalScans            uint64
+				lastScan              UnixTimeMS
+				lastScanSuccess        bool
+				secondLastScanSuccess  bool
+				successfulInteractions float64
+				failedInteractions     float64
+			)
+			if err := hostRows.Scan(
+				(*PublicKey)(&host.HostKey),
+				&totalScans,
+				&lastScan,
+				&lastScanSuccess,
+				&secondLastScanSuccess,
+				&host.ConsecutiveFailures,
+				&successfulInteractions,
+				&failedInteractions,
+				&host.ContractEndHeight,
+			); err != nil {
+				_ = hostRows.Close()
+				return nil, fmt.Errorf("failed to scan slab host-risk evidence: %w", err)
+			}
+
+			host.LastObservation = api.TimeRFC3339(lastScan)
+			if lastScanSuccess || secondLastScanSuccess {
+				host.LastSuccessfulScan = api.TimeRFC3339(lastScan)
+			}
+			switch totalScans {
+			case 0:
+				host.RecentScanSuccessRate = 0
+			case 1:
+				if lastScanSuccess {
+					host.RecentScanSuccessRate = 1
+				}
+			default:
+				if lastScanSuccess {
+					host.RecentScanSuccessRate += 0.5
+				}
+				if secondLastScanSuccess {
+					host.RecentScanSuccessRate += 0.5
+				}
+			}
+			if interactions := successfulInteractions + failedInteractions; interactions > 0 {
+				host.RecentTimeoutRate = failedInteractions / interactions
+			}
+			inputs[i].Hosts = append(inputs[i].Hosts, host)
+		}
+		if err := hostRows.Close(); err != nil {
+			return nil, fmt.Errorf("failed to close slab host-risk rows: %w", err)
+		}
+	}
+
+	result := make([]api.SlabRiskInput, len(inputs))
+	for i := range inputs {
+		result[i] = inputs[i].SlabRiskInput
+	}
+	return result, nil
+}
+
+// UpdateSlabRisks persists one internally-consistent batch of risk results.
+func UpdateSlabRisks(ctx context.Context, tx sql.Tx, updates []api.SlabRiskUpdate) error {
+	for _, update := range updates {
+		if math.IsNaN(update.LossRisk) || math.IsInf(update.LossRisk, 0) || update.LossRisk < 0 || update.LossRisk > 1 {
+			return fmt.Errorf("invalid loss risk for slab %v", update.EncryptionKey)
+		} else if math.IsNaN(update.RecommendedCutoff) || math.IsInf(update.RecommendedCutoff, 0) || update.RecommendedCutoff < -1 || update.RecommendedCutoff > 1 {
+			return fmt.Errorf("invalid recommended cutoff for slab %v", update.EncryptionKey)
+		} else if update.UsableShards < 0 || update.RiskValidUntilUnix <= 0 || update.EstimatedRepairSeconds <= 0 || update.ModelVersion == 0 {
+			return fmt.Errorf("invalid risk metadata for slab %v", update.EncryptionKey)
+		}
+		res, err := tx.Exec(ctx, `
+			UPDATE slabs
+			SET usable_shards = ?,
+				loss_risk = ?,
+				recommended_cutoff = ?,
+				risk_valid_until = ?,
+				estimated_repair_seconds = ?,
+				risk_model_version = ?,
+				risk_queued = ?
+			WHERE key = ? AND usable_shards = ?
+		`,
+			update.UsableShards,
+			update.LossRisk,
+			update.RecommendedCutoff,
+			update.RiskValidUntilUnix,
+			update.EstimatedRepairSeconds,
+			update.ModelVersion,
+			update.RiskQueued,
+			EncryptionKey(update.EncryptionKey),
+			update.UsableShards,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to update slab risk: %w", err)
+		} else if n, err := res.RowsAffected(); err != nil {
+			return fmt.Errorf("failed to check slab risk update: %w", err)
+		} else if n != 1 {
+			return fmt.Errorf("slab %v changed while refreshing risk", update.EncryptionKey)
+		}
+	}
+	return nil
 }
 
 func UpdateBucketPolicy(ctx context.Context, tx sql.Tx, bucket string, bp api.BucketPolicy) error {
