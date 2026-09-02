@@ -27,7 +27,7 @@ _action_default_miner_address() {
 
 action_mine_blocks() {
   _control_require_args 1 "$#" 'action_mine_blocks <count> [reward-address]' || return
-  local count="$1" address="${2:-}" body
+  local count="$1" address="${2:-}" body role
   [[ "${count}" =~ ^[1-9][0-9]*$ ]] || { _control_error 'Block count must be positive.'; return 64; }
   if [[ -z "${address}" ]]; then
     address="$(_action_default_miner_address)" || {
@@ -36,11 +36,12 @@ action_mine_blocks() {
     }
   fi
   body="$(jq -cn --argjson blocks "${count}" --arg address "${address}"     '{blocks:$blocks,address:$address}')"
-  _control_bootstrap_api POST /debug/mine "${body}" >/dev/null
-}
-
-action_wallet_address() {
-  _control_wallet_address_for_node "${NODE_NAME}"
+  role="$(_control_role_for_node "${NODE_NAME}")" || return
+  if [[ "${role}" == 'walletd' ]]; then
+    _control_local_api POST /debug/mine "${body}" >/dev/null
+  else
+    _control_bootstrap_api POST /debug/mine "${body}" >/dev/null
+  fi
 }
 
 action_send_siacoins() {
@@ -63,31 +64,6 @@ action_send_siacoins() {
       return 69
       ;;
   esac
-}
-
-action_create_transaction() {
-  _control_require_args 2 "$#" 'action_create_transaction <address> <hastings>' || return
-  action_send_siacoins "$1" "$2"
-}
-
-action_validate_transaction_json() {
-  _control_require_args 1 "$#" 'action_validate_transaction_json <json-or-file>' || return
-  local input="$1" json
-  if [[ -f "${input}" ]]; then
-    json="$(cat "${input}")"
-  else
-    json="${input}"
-  fi
-  jq -e 'type == "object" and
-    (has("siacoinInputs") or has("siacoinOutputs") or has("minerFee") or
-     has("transactions") or has("v2transactions"))' <<<"${json}" >/dev/null
-}
-
-action_broadcast_transactions() {
-  _control_require_args 1 "$#" 'action_broadcast_transactions <json-or-file>' || return
-  local input="$1" json
-  [[ -f "${input}" ]] && json="$(cat "${input}")" || json="${input}"
-  _control_bootstrap_api POST /txpool/broadcast "${json}"
 }
 
 action_connect_peer() {
@@ -132,7 +108,7 @@ action_host_add_volume() {
   local path="$1" sectors="$2" body
   [[ "${path}" == /* ]] || { _control_error 'Volume path must be absolute.'; return 64; }
   [[ "${sectors}" =~ ^[1-9][0-9]*$ ]] || { _control_error 'Sector count must be positive.'; return 64; }
-  mkdir -p "${path}"
+  mkdir -p "$(dirname "${path}")"
   body="$(jq -cn --arg path "${path}" --argjson sectors "${sectors}" \
     '{localPath:$path,maxSectors:$sectors}')"
   _control_local_api POST /volumes "${body}"
@@ -140,7 +116,11 @@ action_host_add_volume() {
 
 action_renter_trigger_autopilot() {
   _action_require_role renterd || return
-  _control_local_api POST /autopilot/trigger
+  local force_scan="${1:-false}" body
+  [[ "${force_scan}" == 'true' || "${force_scan}" == 'false' ]] \
+    || { _control_error 'force-scan must be true or false.'; return 64; }
+  body="$(jq -cn --argjson forceScan "${force_scan}" '{forceScan:$forceScan}')"
+  _control_local_api POST /autopilot/trigger "${body}"
 }
 
 action_renter_create_bucket() {
@@ -159,7 +139,7 @@ action_renter_upload_object() {
   encoded_bucket="$(jq -rn --arg value "${bucket}" '$value|@uri')"
   encoded_key="$(jq -rn --arg value "${key}" '$value|@uri')"
   curl --silent --show-error --fail-with-body \
-    --connect-timeout 5 --max-time "${SCENARIO_TIMEOUT_SECONDS:-1800}" \
+    --connect-timeout 5 --max-time "${SCENARIO_TRANSFER_TIMEOUT_SECONDS:-45}" \
     --user ":${SIA_API_PASSWORD:-lab-api-password}" \
     --request PUT \
     --header 'Content-Type: application/octet-stream' \
@@ -175,22 +155,9 @@ action_renter_download_object() {
   encoded_key="$(jq -rn --arg value "${key}" '$value|@uri')"
   mkdir -p "$(dirname "${destination}")"
   curl --silent --show-error --fail-with-body \
-    --connect-timeout 5 --max-time "${SCENARIO_TIMEOUT_SECONDS:-1800}" \
+    --connect-timeout 5 --max-time "${SCENARIO_TRANSFER_TIMEOUT_SECONDS:-45}" \
     --user ":${SIA_API_PASSWORD:-lab-api-password}" \
     --output "${destination}" \
-    "http://127.0.0.1:9980/api/worker/object/${encoded_key}?bucket=${encoded_bucket}"
-}
-
-action_renter_delete_object() {
-  _control_require_args 2 "$#" 'action_renter_delete_object <bucket> <key>' || return
-  _action_require_role renterd || return
-  local bucket="$1" key="$2" encoded_bucket encoded_key
-  encoded_bucket="$(jq -rn --arg value "${bucket}" '$value|@uri')"
-  encoded_key="$(jq -rn --arg value "${key}" '$value|@uri')"
-  curl --silent --show-error --fail-with-body \
-    --connect-timeout 5 --max-time 60 \
-    --user ":${SIA_API_PASSWORD:-lab-api-password}" \
-    --request DELETE \
     "http://127.0.0.1:9980/api/worker/object/${encoded_key}?bucket=${encoded_bucket}"
 }
 
@@ -200,11 +167,6 @@ action_generate_test_file() {
   [[ "${bytes}" =~ ^[0-9]+$ ]] || { _control_error 'Byte count must be a nonnegative integer.'; return 64; }
   mkdir -p "$(dirname "${path}")"
   head -c "${bytes}" /dev/zero >"${path}"
-}
-
-action_api_call() {
-  _control_require_args 2 "$#" 'action_api_call <method> <path> [json]' || return
-  _control_local_api "$1" "$2" "${3:-}"
 }
 
 action_pause_primary_daemon_for() {

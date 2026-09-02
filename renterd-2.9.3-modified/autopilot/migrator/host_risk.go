@@ -33,6 +33,20 @@ type HostRiskEstimate struct {
 	FailureDomain      string
 	ValidUntil         time.Time
 	ModelVersion       uint32
+	ScoreBreakdown     HostRiskScoreBreakdown
+}
+
+// HostRiskScoreBreakdown exposes every additive criterion used by the local
+// evidence model. TotalHazard is converted to FailureProbability with
+// 1-exp(-TotalHazard).
+type HostRiskScoreBreakdown struct {
+	TimeoutScore            float64
+	ScanFailureScore        float64
+	BaseRateSubtotal        float64
+	ConsecutiveFailureScore float64
+	ContractExpiryScore     float64
+	ObservationAgeScore     float64
+	TotalHazard             float64
 }
 
 type HostRiskEstimator interface {
@@ -69,18 +83,20 @@ func (e LocalEvidenceEstimator) Estimate(ctx context.Context, input HostRiskInpu
 		}
 	}
 
-	baseRate := 0.60*input.RecentTimeoutRate + 0.40*(1-input.RecentScanSuccessRate)
-	consecutivePenalty := math.Min(0.50, float64(input.ConsecutiveFailures)*0.05)
-	expiryPenalty := 0.0
+	timeoutScore := 0.60 * input.RecentTimeoutRate
+	scanFailureScore := 0.40 * (1 - input.RecentScanSuccessRate)
+	baseRate := timeoutScore + scanFailureScore
+	consecutiveFailureScore := math.Min(0.50, float64(input.ConsecutiveFailures)*0.05)
+	contractExpiryScore := 0.0
 	if !input.ContractEnd.IsZero() && input.ContractEnd.Before(time.Now().Add(horizon)) {
-		expiryPenalty = 0.35
+		contractExpiryScore = 0.35
 	}
-	observationPenalty := 0.25
+	observationAgeScore := 0.25
 	if !input.LastSuccessfulScan.IsZero() {
 		successfulScanAge := time.Since(input.LastSuccessfulScan)
-		observationPenalty = math.Min(0.25, math.Max(0, successfulScanAge.Seconds()/horizon.Seconds()*0.10))
+		observationAgeScore = math.Min(0.25, math.Max(0, successfulScanAge.Seconds()/horizon.Seconds()*0.10))
 	}
-	hazard := math.Max(0, baseRate+consecutivePenalty+expiryPenalty+observationPenalty)
+	hazard := math.Max(0, baseRate+consecutiveFailureScore+contractExpiryScore+observationAgeScore)
 	probability := 1 - math.Exp(-hazard)
 
 	validUntil := input.LastObservation.Add(e.MaxModelAge)
@@ -90,5 +106,14 @@ func (e LocalEvidenceEstimator) Estimate(ctx context.Context, input HostRiskInpu
 		FailureDomain:      input.FailureDomain,
 		ValidUntil:         validUntil,
 		ModelVersion:       e.Version,
+		ScoreBreakdown: HostRiskScoreBreakdown{
+			TimeoutScore:            timeoutScore,
+			ScanFailureScore:        scanFailureScore,
+			BaseRateSubtotal:        baseRate,
+			ConsecutiveFailureScore: consecutiveFailureScore,
+			ContractExpiryScore:     contractExpiryScore,
+			ObservationAgeScore:     observationAgeScore,
+			TotalHazard:             hazard,
+		},
 	}, nil
 }

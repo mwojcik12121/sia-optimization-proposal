@@ -1528,6 +1528,53 @@ func TestObjectsDelimiterRegression(t *testing.T) {
 	}
 }
 
+func TestSlabRiskInputsIncludeHostAddress(t *testing.T) {
+	ss := newTestSQLStore(t, defaultTestSQLStoreConfig)
+	defer ss.Close()
+
+	hostKey := types.PublicKey{3}
+	const hostAddress = "node03:9984"
+	if err := ss.addCustomTestHost(hostKey, hostAddress); err != nil {
+		t.Fatal(err)
+	}
+	fcids, _, err := ss.addTestContracts([]types.PublicKey{hostKey})
+	if err != nil {
+		t.Fatal(err)
+	}
+	slabKey := object.GenerateEncryptionKey(object.EncryptionKeyTypeSalted)
+	if _, err := ss.addTestObject("/"+t.Name(), object.Object{
+		Key: object.GenerateEncryptionKey(object.EncryptionKeyTypeSalted),
+		Slabs: []object.SlabSlice{{Slab: object.Slab{
+			EncryptionKey: slabKey,
+			MinShards:     1,
+			Shards:        newTestShards(hostKey, fcids[0], types.Hash256{1}),
+		}}},
+	}); err != nil {
+		t.Fatal(err)
+	} else if err := ss.RefreshHealth(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+
+	inputs, err := ss.SlabRiskInputs(context.Background(), api.SlabRiskInputsRequest{
+		Limit:        10,
+		NowUnix:      time.Now().Unix(),
+		ModelVersion: 1,
+	})
+	if err != nil {
+		t.Fatal(err)
+	} else if len(inputs) != 1 {
+		t.Fatalf("expected one slab risk input, got %d", len(inputs))
+	} else if inputs[0].EncryptionKey != slabKey {
+		t.Fatal("unexpected slab encryption key")
+	} else if len(inputs[0].Hosts) != 1 {
+		t.Fatalf("expected one slab host, got %d", len(inputs[0].Hosts))
+	} else if inputs[0].Hosts[0].HostKey != hostKey {
+		t.Fatal("unexpected slab host key")
+	} else if inputs[0].Hosts[0].HostAddress != hostAddress {
+		t.Fatalf("unexpected slab host address: got %q, want %q", inputs[0].Hosts[0].HostAddress, hostAddress)
+	}
+}
+
 // TestSlabsForMigration tests the functionality of SlabsForMigration.
 func TestSlabsForMigration(t *testing.T) {
 	// create db

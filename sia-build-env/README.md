@@ -1,6 +1,6 @@
 # Sia binary build environment
 
-This environment compiles Bitcoin executables and exports them as a portable archive for the test environment.
+This environment compiles Sia executables and exports them as a portable archive for the test environment. It builds unmodified and modified renterd from separate Go workspaces so their identical module paths cannot shadow each other.
 
 The build environment uses following defaults:
 
@@ -30,8 +30,17 @@ Build was done on a machine with 32 GB RAM, 12 CPU cores and around 800 GB of fr
 2. Run
 
 ```bash
-./build.sh --core NAME --coreutils NAME --hostd NAME --renterd NAME --walletd NAME --build-jobs N
+./build.sh \
+  --core NAME \
+  --coreutils NAME \
+  --hostd NAME \
+  --renterd-unmodified NAME \
+  --renterd-modified NAME \
+  --walletd NAME \
+  --build-jobs N
 ```
+
+`--renterd` remains available as an alias for `--renterd-unmodified`. The build rejects swapped renterd inputs by checking for the proposal's `slabRisk` configuration extension before and after compilation.
 
 3. After a successful build, the `bin/` directory shall contain:
 
@@ -43,7 +52,12 @@ which contains:
 
 ```text
 BUILD_TAG
+BUILD_MANIFEST
+SHA256SUMS
 hostd
-renterd
+renterd-unmodified
+renterd-modified
 walletd
 ```
+
+`BUILD_MANIFEST` records the source directory assigned to every artifact, and `SHA256SUMS` is checked during packaging and again by the test runner.

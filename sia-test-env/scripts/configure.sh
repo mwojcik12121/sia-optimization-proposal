@@ -93,6 +93,28 @@ http:
 autopilot:
   enabled: true
   allowRedundantHostIPs: true
+  heartbeat: 10s
+  scannerInterval: 10s
+  scannerBatchSize: 100
+  scannerNumThreads: 4
+YAML
+  case "${RENTERD_VARIANT:-}" in
+    modified)
+      cat >>"${path}" <<YAML
+  slabRisk:
+    enabled: true
+    shadow: false
+    enterRisk: 0.000001
+    exitRisk: 0.00000025
+    safetyMargin: 2m
+    modelTTL: 30s
+    fallbackHealthCutoff: 0.75
+YAML
+      ;;
+    unmodified) ;;
+    *) config_error "Unknown renterd variant: ${RENTERD_VARIANT:-unset}."; return 64 ;;
+  esac
+  cat >>"${path}" <<YAML
 bus:
   allowPrivateIPs: true
   bootstrap: false

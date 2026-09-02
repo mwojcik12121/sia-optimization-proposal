@@ -147,20 +147,34 @@ services=()
 runner_select_services "${scenario}" services \
   || runner_fail "No node scenario files exist for scenario ${scenario}."
 
-for binary in hostd renterd walletd BUILD_TAG; do
+for binary in \
+  hostd renterd-unmodified renterd-modified walletd \
+  BUILD_TAG BUILD_MANIFEST SHA256SUMS; do
   [[ -f "${ROOT_DIR}/bin/${binary}" ]] || runner_fail "bin/${binary} is missing; extract sia-binaries.tar.gz into bin/."
 done
-for binary in hostd renterd walletd; do
+for binary in hostd renterd-unmodified renterd-modified walletd; do
   [[ -x "${ROOT_DIR}/bin/${binary}" ]] || runner_fail "bin/${binary} is not executable."
 done
-for command in docker date tee; do
+for command in docker date tee sha256sum grep; do
   command -v "${command}" >/dev/null 2>&1 || runner_fail "Missing command: ${command}."
 done
+(cd "${ROOT_DIR}/bin" && sha256sum --check --strict SHA256SUMS) \
+  || runner_fail 'Binary artifact checksums do not match SHA256SUMS.'
+unmodified_help="$("${ROOT_DIR}/bin/renterd-unmodified" -h 2>&1)" \
+  || runner_fail 'Could not inspect bin/renterd-unmodified.'
+modified_help="$("${ROOT_DIR}/bin/renterd-modified" -h 2>&1)" \
+  || runner_fail 'Could not inspect bin/renterd-modified.'
+[[ "${unmodified_help}" != *autopilot.slabRisk.enabled* ]] \
+  || runner_fail 'bin/renterd-unmodified exposes modified slab-risk flags.'
+[[ "${modified_help}" == *autopilot.slabRisk.enabled* ]] \
+  || runner_fail 'bin/renterd-modified does not expose slab-risk flags.'
 docker info >/dev/null 2>&1 || runner_fail 'Docker Engine is not reachable.'
 docker compose version >/dev/null 2>&1 || runner_fail 'Docker Compose v2 is required.'
 
 export BUILD_TAG="$(tr -d '\r\n' <"${ROOT_DIR}/bin/BUILD_TAG")"
 [[ "${BUILD_TAG}" =~ ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$ ]] || runner_fail 'bin/BUILD_TAG is invalid.'
+grep -Fx "build_tag=${BUILD_TAG}" "${ROOT_DIR}/bin/BUILD_MANIFEST" >/dev/null \
+  || runner_fail 'BUILD_TAG does not match BUILD_MANIFEST.'
 export SCENARIO="${scenario}"
 export LAB_NODES="${services[*]}"
 export INITIAL_CHAIN_HEIGHT=200

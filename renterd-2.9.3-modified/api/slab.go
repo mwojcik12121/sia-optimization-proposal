@@ -37,6 +37,7 @@ type (
 	// currently contributing a usable shard to a slab.
 	SlabRiskHost struct {
 		HostKey               types.PublicKey `json:"hostKey"`
+		HostAddress           string          `json:"hostAddress,omitempty"`
 		RecentScanSuccessRate float64         `json:"recentScanSuccessRate"`
 		RecentTimeoutRate     float64         `json:"recentTimeoutRate"`
 		ConsecutiveFailures   uint64          `json:"consecutiveFailures"`

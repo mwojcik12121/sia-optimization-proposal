@@ -16,15 +16,21 @@ RUN test "$(cat /usr/local/share/sia-lab/BUILD_TAG)" = "${BUILD_TAG}" \
 ENV SIA_API_PASSWORD=lab-api-password \
     INITIAL_CHAIN_HEIGHT=200 \
     BOOTSTRAP_TIMEOUT_SECONDS=7200 \
-    SCENARIO_TIMEOUT_SECONDS=1800 \
+    SCENARIO_TIMEOUT_SECONDS=2400 \
     SCENARIO_RELEASE_TIMEOUT_SECONDS=900 \
     SIA_NETWORK=zen
 WORKDIR /opt/sia-lab
 EXPOSE 9980/tcp 9981/tcp 9984/tcp 9984/udp 10980/tcp 10981/tcp
 ENTRYPOINT ["/usr/bin/tini", "--", "/opt/sia-lab/entrypoint.sh"]
 
-FROM runtime-common AS renter-runtime
-COPY bin/renterd /usr/local/bin/renterd
+FROM runtime-common AS renter-unmodified-runtime
+ENV RENTERD_VARIANT=unmodified
+COPY bin/renterd-unmodified /usr/local/bin/renterd
+COPY bin/walletd /usr/local/bin/walletd
+
+FROM runtime-common AS renter-modified-runtime
+ENV RENTERD_VARIANT=modified
+COPY bin/renterd-modified /usr/local/bin/renterd
 COPY bin/walletd /usr/local/bin/walletd
 
 FROM runtime-common AS host-runtime

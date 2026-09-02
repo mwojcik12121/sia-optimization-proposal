@@ -8,11 +8,33 @@ source /opt/sia-lab/controls/network.sh
 source /opt/sia-lab/configure.sh
 
 readonly SCENARIO_NUMBER="${SCENARIO:-}"
-readonly SCENARIO_TIMEOUT="${SCENARIO_TIMEOUT_SECONDS:-1800}"
+readonly SCENARIO_TIMEOUT="${SCENARIO_TIMEOUT_SECONDS:-2400}"
 readonly RELEASE_TIMEOUT="${SCENARIO_RELEASE_TIMEOUT_SECONDS:-900}"
 
 entry_error() {
   test_log ERROR entrypoint "$*"
+}
+
+entry_validate_renterd_variant() {
+  local expected help has_slab_risk=0
+  expected="$(_control_renterd_variant_for_node "${NODE_NAME}")" || return
+  [[ "${RENTERD_VARIANT:-}" == "${expected}" ]] || {
+    entry_error \
+      "Expected renterd variant ${expected}, received ${RENTERD_VARIANT:-nothing}."
+    return 64
+  }
+  help="$(renterd -h 2>&1)" || {
+    entry_error 'Could not inspect the renterd binary.'
+    return 69
+  }
+  [[ "${help}" != *autopilot.slabRisk.enabled* ]] || has_slab_risk=1
+  case "${expected}:${has_slab_risk}" in
+    modified:1|unmodified:0) ;;
+    *)
+      entry_error "The renterd binary does not match its ${expected} variant label."
+      return 69
+      ;;
+  esac
 }
 
 entry_cleanup() {
@@ -67,6 +89,7 @@ expected_daemon="$(_control_role_for_node "${NODE_NAME}")"
 command -v "${expected_daemon}" >/dev/null 2>&1 \
   || { entry_error "Missing primary binary ${expected_daemon}."; exit 69; }
 command -v walletd >/dev/null 2>&1 || { entry_error 'Missing walletd bootstrap binary.'; exit 69; }
+[[ "${expected_daemon}" != renterd ]] || entry_validate_renterd_variant
 
 scenario_file="/opt/sia-lab/scenarios/${NODE_NAME}_scenario${SCENARIO_NUMBER}.sh"
 [[ -x "${scenario_file}" ]] || { entry_error "Missing scenario file ${scenario_file}."; exit 66; }

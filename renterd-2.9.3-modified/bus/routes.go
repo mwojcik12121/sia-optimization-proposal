@@ -1455,6 +1455,14 @@ func (b *Bus) slabsMigrationHandlerPOST(jc jape.Context) {
 	if jc.Decode(&msr) != nil {
 		return
 	}
+	b.logger.Infow("received migration candidate request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Bool("riskAware", msr.UseRisk),
+		zap.Int("limit", msr.Limit),
+		zap.Float64("healthCutoff", msr.HealthCutoff),
+		zap.Float64("fallbackHealthCutoff", msr.FallbackHealthCutoff),
+		zap.Float64("enterRiskThreshold", msr.EnterRisk),
+		zap.Int64("requestTimeUnix", msr.NowUnix))
 
 	var (
 		slabs []api.UnhealthySlab
@@ -1468,6 +1476,10 @@ func (b *Bus) slabsMigrationHandlerPOST(jc jape.Context) {
 	if jc.Check("couldn't fetch slabs for migration", err) != nil {
 		return
 	}
+	b.logger.Infow("served migration candidate request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Bool("riskAware", msr.UseRisk),
+		zap.Int("candidateCount", len(slabs)))
 
 	jc.Encode(api.SlabsForMigrationResponse{Slabs: slabs})
 }
@@ -1477,10 +1489,31 @@ func (b *Bus) slabsRisksHandlerPOST(jc jape.Context) {
 	if jc.Decode(&req) != nil {
 		return
 	}
+	b.logger.Infow("received slab risk scoring input request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Int("limit", req.Limit),
+		zap.Int64("requestTimeUnix", req.NowUnix),
+		zap.Uint32("modelVersion", req.ModelVersion))
 	inputs, err := b.store.SlabRiskInputs(jc.Request.Context(), req)
 	if jc.Check("couldn't fetch slab risk inputs", err) != nil {
 		return
 	}
+	var hostCount int
+	for _, input := range inputs {
+		hostCount += len(input.Hosts)
+		b.logger.Infow("serving slab risk scoring input",
+			zap.String("requester", jc.Request.RemoteAddr),
+			zap.Stringer("slabKey", input.EncryptionKey),
+			zap.Int("hostCount", len(input.Hosts)),
+			zap.Int("minShards", input.MinShards),
+			zap.Int("totalShards", input.TotalShards),
+			zap.Int("usableShards", input.UsableShards))
+	}
+	b.logger.Infow("served slab risk scoring input request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Int("slabCount", len(inputs)),
+		zap.Int("hostCount", hostCount),
+		zap.Uint32("modelVersion", req.ModelVersion))
 	jc.Encode(inputs)
 }
 
@@ -1489,7 +1522,25 @@ func (b *Bus) slabsRisksHandlerPUT(jc jape.Context) {
 	if jc.Decode(&updates) != nil {
 		return
 	}
-	jc.Check("couldn't update slab risks", b.store.UpdateSlabRisks(jc.Request.Context(), updates))
+	b.logger.Infow("received slab risk score persistence request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Int("slabCount", len(updates)))
+	for _, update := range updates {
+		b.logger.Infow("received slab risk score for persistence",
+			zap.String("requester", jc.Request.RemoteAddr),
+			zap.Stringer("slabKey", update.EncryptionKey),
+			zap.Float64("riskScore", update.LossRisk),
+			zap.Float64("recommendedCutoff", update.RecommendedCutoff),
+			zap.Int("usableShards", update.UsableShards),
+			zap.Bool("riskQueued", update.RiskQueued),
+			zap.Uint32("modelVersion", update.ModelVersion))
+	}
+	if jc.Check("couldn't update slab risks", b.store.UpdateSlabRisks(jc.Request.Context(), updates)) != nil {
+		return
+	}
+	b.logger.Infow("persisted slab risk score request",
+		zap.String("requester", jc.Request.RemoteAddr),
+		zap.Int("slabCount", len(updates)))
 }
 
 func (b *Bus) slabsPartialHandlerGET(jc jape.Context) {

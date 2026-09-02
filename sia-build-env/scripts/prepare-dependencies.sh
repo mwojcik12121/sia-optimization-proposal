@@ -4,6 +4,7 @@ set -Eeuo pipefail
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly MODULE_CACHE="${ROOT_DIR}/src/.gomodcache"
 readonly SRC_DIR="${ROOT_DIR}/src"
+readonly WORKSPACES="${ROOT_DIR}/workspaces"
 readonly BUILD_ENV="${ROOT_DIR}/build.env"
 
 dependency_fail() {
@@ -38,7 +39,8 @@ dependency_fill_cache() {
     --env "CORE_REPO=${CORE_REPO}" \
     --env "COREUTILS_REPO=${COREUTILS_REPO}" \
     --env "HOSTD_REPO=${HOSTD_REPO}" \
-    --env "RENTERD_REPO=${RENTERD_REPO}" \
+    --env "RENTERD_UNMODIFIED_REPO=${RENTERD_UNMODIFIED_REPO}" \
+    --env "RENTERD_MODIFIED_REPO=${RENTERD_MODIFIED_REPO}" \
     --env "WALLETD_REPO=${WALLETD_REPO}" \
     --volume "${ROOT_DIR}/src:/input:ro" \
     --volume "${MODULE_CACHE}:/gomodcache" \
@@ -52,21 +54,22 @@ source_fail() {
 }
 
 source_create_workspace() {
-  local go_mod directory relative count=0
-  rm -f "${SRC_DIR}/go.work" "${SRC_DIR}/go.work.sum"
-  (cd "${SRC_DIR}" && go work init)
-  while IFS= read -r -d '' go_mod; do
-    directory="$(dirname "${go_mod}")"
-    relative="$(realpath --relative-to="${SRC_DIR}" "${directory}")"
-    (cd "${SRC_DIR}" && go work use "./${relative}")
-    count=$((count + 1))
-  done < <(find "${SRC_DIR}" -mindepth 2 -maxdepth 2 -type f -name go.mod -print0 | sort -z)
-  (( count >= 5 )) || source_fail 'At least five source modules are required.'
+  local name="$1" renterd_repository="$2" directory="${WORKSPACES}/$1"
+  mkdir -p "${directory}"
+  (
+    cd "${directory}"
+    go work init \
+      "${SRC_DIR}/${CORE_REPO}" \
+      "${SRC_DIR}/${COREUTILS_REPO}" \
+      "${SRC_DIR}/${HOSTD_REPO}" \
+      "${SRC_DIR}/${renterd_repository}" \
+      "${SRC_DIR}/${WALLETD_REPO}"
+  )
 }
 
 source_prepare_dependencies() {
   local variable
-  for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_REPO WALLETD_REPO; do
+  for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_UNMODIFIED_REPO RENTERD_MODIFIED_REPO WALLETD_REPO; do
     [[ -n "${!variable:-}" ]] || source_fail "${variable} is not set."
     [[ -f "${SRC_DIR}/${!variable}/go.mod" ]] || source_fail "src/${!variable}/go.mod is missing."
   done
@@ -77,9 +80,12 @@ source_prepare_dependencies() {
     *) source_fail 'APPLY_LAB_NETWORK_PATCH must be 0 or 1.' ;;
   esac
 
-  source_create_workspace
+  rm -rf "${WORKSPACES}"
+  source_create_workspace unmodified "${RENTERD_UNMODIFIED_REPO}"
+  source_create_workspace modified "${RENTERD_MODIFIED_REPO}"
   cat >"${BUILD_ENV}" <<ENV
-export GOWORK='${SRC_DIR}/go.work'
+export UNMODIFIED_GOWORK='${WORKSPACES}/unmodified/go.work'
+export MODIFIED_GOWORK='${WORKSPACES}/modified/go.work'
 export GOMODCACHE='${SRC_DIR}/.gomodcache'
 export GOFLAGS='-mod=readonly'
 export GOPROXY='off'

@@ -133,7 +133,7 @@ func (c *Client) SlabRiskInputs(ctx context.Context, req api.SlabRiskInputsReque
 }
 
 func (c *Client) UpdateSlabRisks(ctx context.Context, updates []api.SlabRiskUpdate) error {
-	return c.c.PUT(ctx, "/slabs/risks", updates, nil)
+	return c.c.PUT(ctx, "/slabs/risks", updates)
 }
 
 // UpdateSlab updates a slab with given key, adding the given contract sector

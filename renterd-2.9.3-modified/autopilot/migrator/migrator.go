@@ -46,6 +46,12 @@ const (
 	// Sia targets one block every ten minutes. Contract expiry heights are
 	// converted to local scheduling time only; this does not affect consensus.
 	targetBlockTime = 10 * time.Minute
+
+	// Per-host labels are display-only; exact probabilities and every model
+	// contribution are logged alongside them.
+	hostRiskModerateThreshold = 0.10
+	hostRiskHighThreshold     = 0.25
+	hostRiskCriticalThreshold = 0.50
 )
 
 type (
@@ -196,6 +202,49 @@ func validateRiskPolicy(policy config.SlabRiskSettings) error {
 	return nil
 }
 
+// hostRiskLevel provides display-only bands for the exact per-host failure
+// probability included alongside it in logs.
+func hostRiskLevel(probability float64) string {
+	switch {
+	case probability < hostRiskModerateThreshold:
+		return "low"
+	case probability < hostRiskHighThreshold:
+		return "moderate"
+	case probability < hostRiskCriticalThreshold:
+		return "high"
+	default:
+		return "critical"
+	}
+}
+
+// slabRiskLevel relates the slab's exact loss probability to the configured
+// hysteresis thresholds that control migration scheduling.
+func slabRiskLevel(lossRisk float64, policy config.SlabRiskSettings) string {
+	if lossRisk >= policy.EnterRisk {
+		return "high"
+	} else if lossRisk > policy.ExitRisk {
+		return "elevated"
+	}
+	return "low"
+}
+
+func slabRiskPolicyState(lossRisk float64, policy config.SlabRiskSettings) string {
+	if lossRisk >= policy.EnterRisk {
+		return "at_or_above_entry"
+	} else if lossRisk > policy.ExitRisk {
+		return "between_thresholds"
+	}
+	return "at_or_below_exit"
+}
+
+func hostNodeName(address string) string {
+	host, _, err := net.SplitHostPort(address)
+	if err == nil {
+		return host
+	}
+	return address
+}
+
 func (m *Migrator) Migrate(ctx context.Context) {
 	m.mu.Lock()
 	if m.migrating {
@@ -290,7 +339,7 @@ func (m *Migrator) refreshSlabRisk(ctx context.Context, input api.SlabRiskInput,
 				contractEnd = now.Add(time.Duration(blocks) * targetBlockTime)
 			}
 		}
-		estimate, err := m.hostRiskEstimator.Estimate(ctx, HostRiskInput{
+		riskInput := HostRiskInput{
 			HostKey:               host.HostKey,
 			RecentScanSuccessRate: host.RecentScanSuccessRate,
 			RecentTimeoutRate:     host.RecentTimeoutRate,
@@ -299,12 +348,61 @@ func (m *Migrator) refreshSlabRisk(ctx context.Context, input api.SlabRiskInput,
 			LastObservation:       host.LastObservation.Std(),
 			ContractEnd:           contractEnd,
 			FailureDomain:         host.FailureDomain,
-		}, horizon)
+		}
+		m.logger.Infow("requesting host risk score",
+			zap.Stringer("slabKey", input.EncryptionKey),
+			zap.Stringer("hostKey", host.HostKey),
+			zap.String("hostNode", hostNodeName(host.HostAddress)),
+			zap.String("hostAddress", host.HostAddress),
+			zap.Int("minShards", input.MinShards),
+			zap.Int("totalShards", input.TotalShards),
+			zap.Int("usableShards", input.UsableShards),
+			zap.Int("queuedSlabsAhead", queuedSlabsAhead),
+			zap.Float64("protectionHorizonSeconds", horizon.Seconds()),
+			zap.Float64("recentScanSuccessRate", host.RecentScanSuccessRate),
+			zap.Float64("recentTimeoutRate", host.RecentTimeoutRate),
+			zap.Uint64("consecutiveFailures", host.ConsecutiveFailures),
+			zap.Uint64("contractEndHeight", host.ContractEndHeight),
+			zap.String("failureDomain", host.FailureDomain),
+			zap.Uint32("modelVersion", m.hostRiskEstimator.ModelVersion()))
+
+		estimate, err := m.hostRiskEstimator.Estimate(ctx, riskInput, horizon)
 		if err != nil {
-			return api.SlabRiskUpdate{}, err
+			m.logger.Warnw("host risk scoring failed",
+				zap.Stringer("slabKey", input.EncryptionKey),
+				zap.Stringer("hostKey", host.HostKey),
+				zap.String("hostNode", hostNodeName(host.HostAddress)),
+				zap.String("hostAddress", host.HostAddress),
+				zap.Error(err))
+			return api.SlabRiskUpdate{}, fmt.Errorf("failed to score host %v for slab %v: %w", host.HostKey, input.EncryptionKey, err)
 		} else if estimate.ValidUntil.Before(validUntil) {
 			validUntil = estimate.ValidUntil
 		}
+		m.logger.Infow("host risk score calculated",
+			zap.Stringer("slabKey", input.EncryptionKey),
+			zap.Stringer("hostKey", estimate.HostKey),
+			zap.String("hostNode", hostNodeName(host.HostAddress)),
+			zap.String("hostAddress", host.HostAddress),
+			zap.String("failureDomain", estimate.FailureDomain),
+			zap.Float64("riskScore", estimate.FailureProbability),
+			zap.String("riskLevel", hostRiskLevel(estimate.FailureProbability)),
+			zap.Float64("recentScanSuccessRate", riskInput.RecentScanSuccessRate),
+			zap.Float64("recentTimeoutRate", riskInput.RecentTimeoutRate),
+			zap.Uint64("consecutiveFailures", riskInput.ConsecutiveFailures),
+			zap.Time("lastSuccessfulScan", riskInput.LastSuccessfulScan),
+			zap.Time("lastObservation", riskInput.LastObservation),
+			zap.Time("contractEnd", riskInput.ContractEnd),
+			zap.Uint64("contractEndHeight", host.ContractEndHeight),
+			zap.Float64("protectionHorizonSeconds", horizon.Seconds()),
+			zap.Float64("timeoutCriterionScore", estimate.ScoreBreakdown.TimeoutScore),
+			zap.Float64("scanFailureCriterionScore", estimate.ScoreBreakdown.ScanFailureScore),
+			zap.Float64("baseRateSubtotal", estimate.ScoreBreakdown.BaseRateSubtotal),
+			zap.Float64("consecutiveFailureCriterionScore", estimate.ScoreBreakdown.ConsecutiveFailureScore),
+			zap.Float64("contractExpiryCriterionScore", estimate.ScoreBreakdown.ContractExpiryScore),
+			zap.Float64("observationAgeCriterionScore", estimate.ScoreBreakdown.ObservationAgeScore),
+			zap.Float64("totalHazardScore", estimate.ScoreBreakdown.TotalHazard),
+			zap.Time("validUntil", estimate.ValidUntil),
+			zap.Uint32("modelVersion", estimate.ModelVersion))
 		hostRisks = append(hostRisks, HostRisk{
 			HostKey:            estimate.HostKey,
 			FailureProbability: estimate.FailureProbability,
@@ -354,15 +452,30 @@ func (m *Migrator) refreshSlabRisks(ctx context.Context) {
 		m.logger.Warnw("slab risk refresh failed; fixed health cutoff will be used", zap.Error(err))
 		return
 	}
-	inputs, err := m.ss.SlabRiskInputs(ctx, api.SlabRiskInputsRequest{
+	request := api.SlabRiskInputsRequest{
 		Limit:        riskRefreshBatchSize,
 		NowUnix:      time.Now().Unix(),
 		ModelVersion: m.hostRiskEstimator.ModelVersion(),
-	})
+	}
+	m.logger.Infow("requesting slabs for risk scoring",
+		zap.Int("limit", request.Limit),
+		zap.Int64("requestTimeUnix", request.NowUnix),
+		zap.Uint32("modelVersion", request.ModelVersion),
+		zap.Uint64("consensusHeight", state.BlockHeight))
+	inputs, err := m.ss.SlabRiskInputs(ctx, request)
 	if err != nil {
 		m.logger.Warnw("slab risk input refresh failed; fixed health cutoff will be used", zap.Error(err))
 		return
 	}
+	var hostCount int
+	for _, input := range inputs {
+		hostCount += len(input.Hosts)
+	}
+	m.logger.Infow("received slabs for risk scoring",
+		zap.Int("slabCount", len(inputs)),
+		zap.Int("hostCount", hostCount),
+		zap.Uint32("modelVersion", request.ModelVersion),
+		zap.Uint64("consensusHeight", state.BlockHeight))
 
 	updates := make([]api.SlabRiskUpdate, 0, len(inputs))
 	for i, input := range inputs {
@@ -372,23 +485,40 @@ func (m *Migrator) refreshSlabRisks(ctx context.Context) {
 		update, err := m.refreshSlabRisk(ctx, input, i, state.BlockHeight)
 		if err != nil {
 			m.logger.Warnw("slab risk calculation failed; fixed health cutoff will be used",
-				zap.Stringer("slab", input.EncryptionKey),
+				zap.Stringer("slabKey", input.EncryptionKey),
 				zap.Error(err))
 			continue
 		}
-		m.logger.Debugw("calculated slab loss risk",
-			zap.Stringer("slab", input.EncryptionKey),
-			zap.Float64("lossRisk", update.LossRisk),
+		m.logger.Infow("slab loss risk score calculated",
+			zap.Stringer("slabKey", input.EncryptionKey),
+			zap.Float64("riskScore", update.LossRisk),
+			zap.String("riskLevel", slabRiskLevel(update.LossRisk, m.riskPolicy)),
+			zap.String("riskPolicyState", slabRiskPolicyState(update.LossRisk, m.riskPolicy)),
+			zap.Float64("enterRiskThreshold", m.riskPolicy.EnterRisk),
+			zap.Float64("exitRiskThreshold", m.riskPolicy.ExitRisk),
+			zap.Float64("enterRiskThresholdMultiple", update.LossRisk/m.riskPolicy.EnterRisk),
+			zap.Int("minShards", input.MinShards),
+			zap.Int("totalShards", input.TotalShards),
+			zap.Int("usableShards", update.UsableShards),
 			zap.Float64("recommendedCutoff", update.RecommendedCutoff),
 			zap.Int64("riskValidUntil", update.RiskValidUntilUnix),
 			zap.Int64("protectionHorizonSeconds", update.EstimatedRepairSeconds),
+			zap.Uint32("modelVersion", update.ModelVersion),
+			zap.Bool("previouslyRiskQueued", input.CurrentlyRiskQueued),
 			zap.Bool("riskQueued", update.RiskQueued),
 			zap.Bool("shadow", m.riskPolicy.Shadow))
 		updates = append(updates, update)
 	}
 	if len(updates) > 0 {
+		m.logger.Infow("persisting slab risk scores",
+			zap.Int("slabCount", len(updates)),
+			zap.Uint32("modelVersion", request.ModelVersion))
 		if err := m.ss.UpdateSlabRisks(ctx, updates); err != nil {
 			m.logger.Warnw("failed to persist slab risks; fixed health cutoff will be used", zap.Error(err))
+		} else {
+			m.logger.Infow("persisted slab risk scores",
+				zap.Int("slabCount", len(updates)),
+				zap.Uint32("modelVersion", request.ModelVersion))
 		}
 	}
 }
@@ -457,29 +587,60 @@ func (m *Migrator) performMigrations(ctx context.Context) {
 		if m.riskPolicy.Enabled {
 			fixedCutoff = m.riskPolicy.FallbackHealthCutoff
 		}
+		m.logger.Infow("requesting fixed-cutoff migration candidates",
+			zap.Float64("healthCutoff", fixedCutoff),
+			zap.Int("limit", migratorBatchSize))
 		fixedCandidates, err := m.ss.SlabsForMigration(ctx, fixedCutoff, migratorBatchSize)
 		if err != nil {
 			m.logger.Errorf("failed to fetch slabs for migration, err: %v", err)
 			return
 		}
+		m.logger.Infow("received fixed-cutoff migration candidates",
+			zap.Int("candidateCount", len(fixedCandidates)),
+			zap.Float64("healthCutoff", fixedCutoff))
 		toMigrateNew := fixedCandidates
 		if m.riskPolicy.Enabled {
-			riskCandidates, riskErr := m.ss.RiskAwareSlabsForMigration(ctx, api.MigrationSlabsRequest{
+			riskRequest := api.MigrationSlabsRequest{
 				FallbackHealthCutoff: m.riskPolicy.FallbackHealthCutoff,
 				EnterRisk:            m.riskPolicy.EnterRisk,
 				Limit:                migratorBatchSize,
 				NowUnix:              time.Now().Unix(),
 				UseRisk:              true,
-			})
+			}
+			m.logger.Infow("requesting risk-aware migration candidates",
+				zap.Float64("fallbackHealthCutoff", riskRequest.FallbackHealthCutoff),
+				zap.Float64("enterRiskThreshold", riskRequest.EnterRisk),
+				zap.Int("limit", riskRequest.Limit),
+				zap.Int64("requestTimeUnix", riskRequest.NowUnix),
+				zap.Bool("shadow", m.riskPolicy.Shadow))
+			riskCandidates, riskErr := m.ss.RiskAwareSlabsForMigration(ctx, riskRequest)
 			if riskErr != nil {
 				m.logger.Warnf("failed to fetch risk-aware slabs; using fixed health cutoff: %v", riskErr)
-			} else if m.riskPolicy.Shadow {
-				m.logger.Infow("slab risk shadow candidate comparison",
-					zap.Int("fixedCandidates", len(fixedCandidates)),
-					zap.Int("riskCandidates", len(riskCandidates)),
-					zap.Int("overlap", migrationCandidateOverlap(fixedCandidates, riskCandidates)))
 			} else {
-				toMigrateNew = riskCandidates
+				m.logger.Infow("received risk-aware migration candidates",
+					zap.Int("candidateCount", len(riskCandidates)),
+					zap.Float64("enterRiskThreshold", riskRequest.EnterRisk),
+					zap.Bool("shadow", m.riskPolicy.Shadow))
+				for _, candidate := range riskCandidates {
+					m.logger.Infow("risk-aware migration candidate selected",
+						zap.Stringer("slabKey", candidate.EncryptionKey),
+						zap.Float64("riskScore", candidate.LossRisk),
+						zap.String("riskLevel", slabRiskLevel(candidate.LossRisk, m.riskPolicy)),
+						zap.String("riskPolicyState", slabRiskPolicyState(candidate.LossRisk, m.riskPolicy)),
+						zap.Float64("health", candidate.Health),
+						zap.Float64("recommendedCutoff", candidate.RecommendedCutoff),
+						zap.Time("riskValidUntil", candidate.RiskValidUntil.Std()),
+						zap.Duration("estimatedRepairDuration", time.Duration(candidate.EstimatedRepairDuration)),
+						zap.String("selectionReason", candidate.Reason))
+				}
+				if m.riskPolicy.Shadow {
+					m.logger.Infow("slab risk shadow candidate comparison",
+						zap.Int("fixedCandidates", len(fixedCandidates)),
+						zap.Int("riskCandidates", len(riskCandidates)),
+						zap.Int("overlap", migrationCandidateOverlap(fixedCandidates, riskCandidates)))
+				} else {
+					toMigrateNew = riskCandidates
+				}
 			}
 		}
 		m.logger.Infof("%d potential slabs fetched for migration", len(toMigrateNew))

@@ -2100,6 +2100,7 @@ func SlabRiskInputs(ctx context.Context, tx sql.Tx, req api.SlabRiskInputsReques
 		hostRows, err := tx.Query(ctx, `
 			SELECT
 				c.host_key,
+				COALESCE((SELECT MIN(ha.net_address) FROM host_addresses ha WHERE ha.db_host_id = h.id AND ha.protocol = ?), ''),
 				COALESCE(h.total_scans, 0),
 				COALESCE(h.last_scan, 0),
 				COALESCE(h.last_scan_success, 0),
@@ -2115,6 +2116,7 @@ func SlabRiskInputs(ctx context.Context, tx sql.Tx, req api.SlabRiskInputsReques
 			WHERE s.db_slab_id = ?
 			GROUP BY
 				c.host_key,
+				h.id,
 				h.total_scans,
 				h.last_scan,
 				h.last_scan_success,
@@ -2123,7 +2125,7 @@ func SlabRiskInputs(ctx context.Context, tx sql.Tx, req api.SlabRiskInputsReques
 				h.successful_interactions,
 				h.failed_interactions
 			ORDER BY c.host_key
-		`, contractUsabilityGood, inputs[i].id)
+		`, ChainProtocol(siamux.Protocol), contractUsabilityGood, inputs[i].id)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch host evidence for slab %v: %w", inputs[i].EncryptionKey, err)
 		}
@@ -2139,6 +2141,7 @@ func SlabRiskInputs(ctx context.Context, tx sql.Tx, req api.SlabRiskInputsReques
 			)
 			if err := hostRows.Scan(
 				(*PublicKey)(&host.HostKey),
+				&host.HostAddress,
 				&totalScans,
 				&lastScan,
 				&lastScanSuccess,

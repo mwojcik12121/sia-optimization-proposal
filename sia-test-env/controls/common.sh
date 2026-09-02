@@ -34,6 +34,14 @@ _control_role_for_node() {
   esac
 }
 
+_control_renterd_variant_for_node() {
+  case "$1" in
+    node01) printf 'modified\n' ;;
+    node02) printf 'unmodified\n' ;;
+    *) return 64 ;;
+  esac
+}
+
 _control_selected_nodes() {
   local destination="$1" node
   local -a parsed
@@ -76,17 +84,6 @@ _control_bootstrap_http_address() {
     printf '%s:9980\n' "${host}"
   else
     printf '%s:10980\n' "${host}"
-  fi
-}
-
-_control_bootstrap_peer_address() {
-  local bootstrap role
-  bootstrap="$(_control_bootstrap_node)" || return
-  role="$(_control_role_for_node "${bootstrap}")" || return
-  if [[ "${role}" == 'walletd' ]]; then
-    printf '%s:9981\n' "${bootstrap}"
-  else
-    printf '%s:10981\n' "${bootstrap}"
   fi
 }
 
@@ -180,10 +177,6 @@ _control_wallet_for_node() {
 
 _control_wallet_address_for_node() {
   _control_wallet_for_node "$1" | jq -er '.address | select(type == "string" and length > 0)'
-}
-
-_control_resolve_ipv4() {
-  getent ahostsv4 "$1" | awk 'NR == 1 { print $1; exit }'
 }
 
 _control_json_string() {

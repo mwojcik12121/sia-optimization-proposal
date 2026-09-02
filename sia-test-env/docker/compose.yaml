@@ -43,8 +43,13 @@ x-common-environment: &common-environment
   LAB_NODES: "${LAB_NODES:-node01 node02 node03 node04 node05 node06 node07 node08}"
   INITIAL_CHAIN_HEIGHT: "200"
   BOOTSTRAP_TIMEOUT_SECONDS: "${BOOTSTRAP_TIMEOUT_SECONDS:-7200}"
-  SCENARIO_TIMEOUT_SECONDS: "${SCENARIO_TIMEOUT_SECONDS:-1800}"
+  SCENARIO_TIMEOUT_SECONDS: "${SCENARIO_TIMEOUT_SECONDS:-2400}"
   SCENARIO_RELEASE_TIMEOUT_SECONDS: "${SCENARIO_RELEASE_TIMEOUT_SECONDS:-900}"
+  SCENARIO_SETUP_BLOCKS: "${SCENARIO_SETUP_BLOCKS:-40}"
+  SCENARIO_BLOCKS: "${SCENARIO_BLOCKS:-240}"
+  SCENARIO_DRAIN_BLOCKS: "${SCENARIO_DRAIN_BLOCKS:-80}"
+  SCENARIO_MINE_INTERVAL_SECONDS: "${SCENARIO_MINE_INTERVAL_SECONDS:-4}"
+  SCENARIO_TRANSFER_TIMEOUT_SECONDS: "${SCENARIO_TRANSFER_TIMEOUT_SECONDS:-45}"
   TZ: "${TZ:-:/etc/localtime}"
 
 services:
@@ -55,7 +60,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: renter-runtime
+      target: renter-modified-runtime
       network: none
       args:
         RUNTIME_TOOLS_IMAGE: "${RUNTIME_TOOLS_IMAGE:-sia-lab-runtime-tools:bookworm}"
@@ -73,7 +78,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: renter-runtime
+      target: renter-unmodified-runtime
       network: none
       args:
         RUNTIME_TOOLS_IMAGE: "${RUNTIME_TOOLS_IMAGE:-sia-lab-runtime-tools:bookworm}"

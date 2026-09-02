@@ -3,6 +3,8 @@ set -Eeuo pipefail
 
 readonly SRC_DIR=/workspace/src
 readonly OUTPUT_DIR=/out
+UNMODIFIED_HELP=''
+MODIFIED_HELP=''
 
 compile_fail() {
   printf '[source-build][ERROR] %s\n' "$*" >&2
@@ -27,21 +29,21 @@ compile_ensure_git_metadata() {
 }
 
 compile_generate() {
-  local repository="$1"
+  local repository="$1" workspace="$2"
   case "${RUN_GO_GENERATE:-1}" in
     0) return 0 ;;
     1)
       compile_ensure_git_metadata "${repository}"
-      (cd "${SRC_DIR}/${repository}" && go generate ./...)
+      (cd "${SRC_DIR}/${repository}" && GOWORK="${workspace}" go generate ./...)
       ;;
     *) compile_fail 'RUN_GO_GENERATE must be 0 or 1.' ;;
   esac
 }
 
 compile_daemon() {
-  local repository="$1" package="$2" output="$3"
+  local repository="$1" package="$2" output="$3" workspace="$4"
   local -a arguments
-  compile_generate "${repository}"
+  compile_generate "${repository}" "${workspace}"
   arguments=(-p "${BUILD_JOBS}" -buildvcs=false -tags 'netgo timetzdata' -trimpath)
   if [[ "${SIA_BUILD_STATIC:-1}" == '1' ]]; then
     arguments+=(-a -ldflags '-s -w -linkmode external -extldflags "-static"')
@@ -49,7 +51,7 @@ compile_daemon() {
     arguments+=(-ldflags '-s -w')
   fi
   printf '[source-build] Compiling %s\n' "${output}" >&2
-  (cd "${SRC_DIR}/${repository}" && CGO_ENABLED=1 go build "${arguments[@]}" -o "${OUTPUT_DIR}/${output}" "${package}")
+  (cd "${SRC_DIR}/${repository}" && GOWORK="${workspace}" CGO_ENABLED=1 go build "${arguments[@]}" -o "${OUTPUT_DIR}/${output}" "${package}")
   [[ -x "${OUTPUT_DIR}/${output}" ]] || compile_fail "${output} was not produced."
 }
 
@@ -59,7 +61,32 @@ compile_daemon() {
 source /workspace/build.env
 export GOMAXPROCS="${BUILD_JOBS}"
 mkdir -p "${OUTPUT_DIR}"
-compile_daemon "${HOSTD_REPO}" ./cmd/hostd hostd
-compile_daemon "${RENTERD_REPO}" ./cmd/renterd renterd
-compile_daemon "${WALLETD_REPO}" ./cmd/walletd walletd
+compile_daemon "${HOSTD_REPO}" ./cmd/hostd hostd "${UNMODIFIED_GOWORK}"
+compile_daemon \
+  "${RENTERD_UNMODIFIED_REPO}" ./cmd/renterd renterd-unmodified "${UNMODIFIED_GOWORK}"
+compile_daemon \
+  "${RENTERD_MODIFIED_REPO}" ./cmd/renterd renterd-modified "${MODIFIED_GOWORK}"
+compile_daemon "${WALLETD_REPO}" ./cmd/walletd walletd "${UNMODIFIED_GOWORK}"
+
+UNMODIFIED_HELP="$("${OUTPUT_DIR}/renterd-unmodified" -h 2>&1)" \
+  || compile_fail 'Could not inspect renterd-unmodified.'
+MODIFIED_HELP="$("${OUTPUT_DIR}/renterd-modified" -h 2>&1)" \
+  || compile_fail 'Could not inspect renterd-modified.'
+if [[ "${UNMODIFIED_HELP}" == *autopilot.slabRisk.enabled* ]]; then
+  compile_fail 'renterd-unmodified unexpectedly exposes slab-risk configuration flags.'
+fi
+[[ "${MODIFIED_HELP}" == *autopilot.slabRisk.enabled* ]] \
+  || compile_fail 'renterd-modified does not expose slab-risk configuration flags.'
+
 printf '%s\n' "${BUILD_TAG}" >"${OUTPUT_DIR}/BUILD_TAG"
+cat >"${OUTPUT_DIR}/BUILD_MANIFEST" <<MANIFEST
+format=1
+build_tag=${BUILD_TAG}
+core_repo=${CORE_REPO}
+coreutils_repo=${COREUTILS_REPO}
+hostd_repo=${HOSTD_REPO}
+renterd_unmodified_repo=${RENTERD_UNMODIFIED_REPO}
+renterd_modified_repo=${RENTERD_MODIFIED_REPO}
+walletd_repo=${WALLETD_REPO}
+MANIFEST
+(cd "${OUTPUT_DIR}" && sha256sum hostd renterd-unmodified renterd-modified walletd >SHA256SUMS)
