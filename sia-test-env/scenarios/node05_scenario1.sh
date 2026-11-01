@@ -4,6 +4,6 @@ source /opt/sia-lab/controls/common.sh
 source /opt/sia-lab/controls/actions.sh
 source /opt/sia-lab/controls/info.sh
 source /opt/sia-lab/controls/network.sh
-source /opt/sia-lab/controls/scenario.sh
+source /opt/sia-lab/controls/repair-tests.sh
 
-scenario_run
+repair_test_run

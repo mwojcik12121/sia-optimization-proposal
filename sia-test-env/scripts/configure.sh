@@ -78,7 +78,30 @@ YAML
 }
 
 config_write_renterd_config() {
-  local path="$1" qseed qpassword qdir
+  local path="$1" qseed qpassword qdir help risk_enabled=false risk_config=''
+  help="$(renterd -h 2>&1)" || {
+    config_error 'Could not inspect the renterd binary.'
+    return 69
+  }
+  export SIA_REPAIR_RISK_SUPPORTED=false
+  [[ "${NODE_NAME}" != node01 ]] || risk_enabled=true
+  if [[ "${help}" == *autopilot.migratorRisk.enabled* ]]; then
+    export SIA_REPAIR_RISK_SUPPORTED=true
+    risk_config="$(cat <<YAML
+  migratorRisk:
+    enabled: ${risk_enabled}
+    entryThreshold: 0.000001
+    exitThreshold: 0.00000025
+    safetyMargin: 5m
+    modelTTL: 30s
+    defaultRepairTime: 5s
+    maxQueueDelay: 30m
+    maxHorizon: 1h
+YAML
+    )"
+  else
+    test_log INFO configure 'Repair risk policy unavailable; observing original fixed-health behavior.'
+  fi
   qseed="$(_config_yaml_string "${NODE_SEED}")"
   qpassword="$(_config_yaml_string "${SIA_API_PASSWORD}")"
   qdir="$(_config_yaml_string "/var/lib/sia/${NODE_NAME}")"
@@ -93,28 +116,12 @@ http:
 autopilot:
   enabled: true
   allowRedundantHostIPs: true
-  heartbeat: 10s
-  scannerInterval: 10s
+  heartbeat: 24h
+  scannerInterval: 24h
   scannerBatchSize: 100
   scannerNumThreads: 4
-YAML
-  case "${RENTERD_VARIANT:-}" in
-    modified)
-      cat >>"${path}" <<YAML
-  slabRisk:
-    enabled: true
-    shadow: false
-    enterRisk: 0.000001
-    exitRisk: 0.00000025
-    safetyMargin: 2m
-    modelTTL: 30s
-    fallbackHealthCutoff: 0.75
-YAML
-      ;;
-    unmodified) ;;
-    *) config_error "Unknown renterd variant: ${RENTERD_VARIANT:-unset}."; return 64 ;;
-  esac
-  cat >>"${path}" <<YAML
+  migratorHealthCutoff: 0.75
+${risk_config}
 bus:
   allowPrivateIPs: true
   bootstrap: false

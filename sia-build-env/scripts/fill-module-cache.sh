@@ -19,8 +19,7 @@ cache_copy_modules() {
     "${CORE_REPO}" \
     "${COREUTILS_REPO}" \
     "${HOSTD_REPO}" \
-    "${RENTERD_UNMODIFIED_REPO}" \
-    "${RENTERD_MODIFIED_REPO}" \
+    "${RENTERD_REPO}" \
     "${WALLETD_REPO}"; do
     source="${INPUT_ROOT}/${repository}"
     [[ -f "${source}/go.mod" ]] || cache_fail "${source}/go.mod is missing."
@@ -33,7 +32,7 @@ cache_copy_modules() {
 }
 
 cache_create_workspace() {
-  local name="$1" renterd_repository="$2" directory="${WORKSPACES}/$1"
+  local directory="${WORKSPACES}/build"
   mkdir -p "${directory}"
   (
     cd "${directory}"
@@ -41,7 +40,7 @@ cache_create_workspace() {
       "${WORK_SRC}/${CORE_REPO}" \
       "${WORK_SRC}/${COREUTILS_REPO}" \
       "${WORK_SRC}/${HOSTD_REPO}" \
-      "${WORK_SRC}/${renterd_repository}" \
+      "${WORK_SRC}/${RENTERD_REPO}" \
       "${WORK_SRC}/${WALLETD_REPO}"
   )
 }
@@ -70,29 +69,25 @@ cache_run_generator() {
 }
 
 cache_run_generators() {
-  local unmodified_workspace="${WORKSPACES}/unmodified/go.work"
-  local modified_workspace="${WORKSPACES}/modified/go.work"
+  local workspace="${WORKSPACES}/build/go.work"
   case "${RUN_GO_GENERATE:-1}" in
     0) return 0 ;;
     1) ;;
     *) cache_fail 'RUN_GO_GENERATE must be 0 or 1.' ;;
   esac
-  cache_run_generator "${HOSTD_REPO}" "${unmodified_workspace}"
-  cache_run_generator "${RENTERD_UNMODIFIED_REPO}" "${unmodified_workspace}"
-  cache_run_generator "${RENTERD_MODIFIED_REPO}" "${modified_workspace}"
-  cache_run_generator "${WALLETD_REPO}" "${unmodified_workspace}"
+  cache_run_generator "${HOSTD_REPO}" "${workspace}"
+  cache_run_generator "${RENTERD_REPO}" "${workspace}"
+  cache_run_generator "${WALLETD_REPO}" "${workspace}"
 }
 
 cache_resolve_commands() {
-  local unmodified_workspace="${WORKSPACES}/unmodified/go.work"
-  local modified_workspace="${WORKSPACES}/modified/go.work"
-  (cd "${WORK_SRC}/${HOSTD_REPO}" && GOWORK="${unmodified_workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/hostd >/dev/null)
-  (cd "${WORK_SRC}/${RENTERD_UNMODIFIED_REPO}" && GOWORK="${unmodified_workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/renterd >/dev/null)
-  (cd "${WORK_SRC}/${RENTERD_MODIFIED_REPO}" && GOWORK="${modified_workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/renterd >/dev/null)
-  (cd "${WORK_SRC}/${WALLETD_REPO}" && GOWORK="${unmodified_workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/walletd >/dev/null)
+  local workspace="${WORKSPACES}/build/go.work"
+  (cd "${WORK_SRC}/${HOSTD_REPO}" && GOWORK="${workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/hostd >/dev/null)
+  (cd "${WORK_SRC}/${RENTERD_REPO}" && GOWORK="${workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/renterd >/dev/null)
+  (cd "${WORK_SRC}/${WALLETD_REPO}" && GOWORK="${workspace}" go list -tags 'netgo timetzdata' -deps ./cmd/walletd >/dev/null)
 }
 
-for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_UNMODIFIED_REPO RENTERD_MODIFIED_REPO WALLETD_REPO; do
+for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_REPO WALLETD_REPO; do
   [[ -n "${!variable:-}" ]] || cache_fail "${variable} is not set."
 done
 for command in go git tar; do
@@ -107,8 +102,7 @@ export GOTOOLCHAIN=local
 export GOFLAGS=-mod=readonly
 
 cache_copy_modules
-cache_create_workspace unmodified "${RENTERD_UNMODIFIED_REPO}"
-cache_create_workspace modified "${RENTERD_MODIFIED_REPO}"
+cache_create_workspace
 cache_run_generators
 cache_resolve_commands
 printf '[dependencies] External Go dependencies are ready.\n' >&2

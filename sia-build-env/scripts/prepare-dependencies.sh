@@ -39,10 +39,9 @@ dependency_fill_cache() {
     --env "CORE_REPO=${CORE_REPO}" \
     --env "COREUTILS_REPO=${COREUTILS_REPO}" \
     --env "HOSTD_REPO=${HOSTD_REPO}" \
-    --env "RENTERD_UNMODIFIED_REPO=${RENTERD_UNMODIFIED_REPO}" \
-    --env "RENTERD_MODIFIED_REPO=${RENTERD_MODIFIED_REPO}" \
+    --env "RENTERD_REPO=${RENTERD_REPO}" \
     --env "WALLETD_REPO=${WALLETD_REPO}" \
-    --volume "${ROOT_DIR}/src:/input:ro" \
+    --volume "${SRC_DIR}:/input:ro" \
     --volume "${MODULE_CACHE}:/gomodcache" \
     --volume "${ROOT_DIR}/scripts/fill-module-cache.sh:/fill-module-cache.sh:ro" \
     "${image}" /bin/bash /fill-module-cache.sh
@@ -54,7 +53,7 @@ source_fail() {
 }
 
 source_create_workspace() {
-  local name="$1" renterd_repository="$2" directory="${WORKSPACES}/$1"
+  local directory="${WORKSPACES}/build"
   mkdir -p "${directory}"
   (
     cd "${directory}"
@@ -62,14 +61,14 @@ source_create_workspace() {
       "${SRC_DIR}/${CORE_REPO}" \
       "${SRC_DIR}/${COREUTILS_REPO}" \
       "${SRC_DIR}/${HOSTD_REPO}" \
-      "${SRC_DIR}/${renterd_repository}" \
+      "${SRC_DIR}/${RENTERD_REPO}" \
       "${SRC_DIR}/${WALLETD_REPO}"
   )
 }
 
 source_prepare_dependencies() {
   local variable
-  for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_UNMODIFIED_REPO RENTERD_MODIFIED_REPO WALLETD_REPO; do
+  for variable in CORE_REPO COREUTILS_REPO HOSTD_REPO RENTERD_REPO WALLETD_REPO; do
     [[ -n "${!variable:-}" ]] || source_fail "${variable} is not set."
     [[ -f "${SRC_DIR}/${!variable}/go.mod" ]] || source_fail "src/${!variable}/go.mod is missing."
   done
@@ -81,11 +80,9 @@ source_prepare_dependencies() {
   esac
 
   rm -rf "${WORKSPACES}"
-  source_create_workspace unmodified "${RENTERD_UNMODIFIED_REPO}"
-  source_create_workspace modified "${RENTERD_MODIFIED_REPO}"
+  source_create_workspace
   cat >"${BUILD_ENV}" <<ENV
-export UNMODIFIED_GOWORK='${WORKSPACES}/unmodified/go.work'
-export MODIFIED_GOWORK='${WORKSPACES}/modified/go.work'
+export GOWORK='${WORKSPACES}/build/go.work'
 export GOMODCACHE='${SRC_DIR}/.gomodcache'
 export GOFLAGS='-mod=readonly'
 export GOPROXY='off'

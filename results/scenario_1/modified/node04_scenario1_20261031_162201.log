@@ -1,0 +1,308 @@
+2026-10-31T15:22:01Z	INFO	hostd	{"version": "671b302", "network": "zen", "commit": "671b302", "buildDate": "2026-10-31T14:06:32Z"}
+2026-10-31T15:22:01Z	INFO	started RHP4 listener	{"address": "[::]:9984"}
+2026-10-31T15:22:01Z	INFO	started RHP4 QUIC listener	{"address": "[::]:9984"}
+2026-10-31T15:22:01Z	INFO	node started	{"network": "zen", "hostKey": "ed25519:15dcf53028331865982d29d24b50aa75e786b2b04b4a1f87aae51b73cafff47c", "http": "[::]:9980", "p2p": "[::]:9981"}
+2026-10-31T15:22:01Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:01Z	WARN	version	failed to check version	{"error": "failed to parse current version \"671b302\": invalid version format: 671b302"}
+2026-10-31T15:22:01Z	WARN	certificates.nomad	failed to refresh certificate	{"domain": "2nefac186cc6b61d5794mk5aenjodclg9d51v1taskdn7invuhu0.sia.host", "error": "failed to issue certificate: failed to send request: Post \"https://nomad.sia.host/api/certificate\": dial tcp: lookup nomad.sia.host on 127.0.0.11:53: server misbehaving"}
+2026-10-31T15:22:07Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:08.556 INFO     [node04][bootstrap] initial private blockchain reached height 200; tip=b285fe0536ef39bb417a1fbf3a1c77a140a1575c3d9e11d8920a5bc468d44439; all selected modern daemons are synchronized
+2026-10-31T15:22:13.611 INFO     [node04][scenario] running scenario 1
+2026-10-31T15:22:13.616 INFO     [node04][repair:START] scenario=1; role=hostd; startHeight=240; finalHeight=480
+2026-10-31T15:22:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:23Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:24Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:28Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41398", "streamID": "819710a9", "rpc": "Settings", "elapsed": "303.922µs"}
+2026-10-31T15:22:28Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41406", "streamID": "66683193", "rpc": "Settings", "elapsed": "136.368µs"}
+2026-10-31T15:22:28Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41416", "streamID": "0df89ef8", "rpc": "Settings", "elapsed": "102.96µs"}
+2026-10-31T15:22:32Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:33Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41438", "streamID": "66dc0a61", "rpc": "Settings", "elapsed": "142.828µs"}
+2026-10-31T15:22:33Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41442", "streamID": "143ef55d", "rpc": "Settings", "elapsed": "131.78µs"}
+2026-10-31T15:22:33Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41450", "streamID": "644cd56b", "rpc": "Settings", "elapsed": "118.989µs"}
+2026-10-31T15:22:33Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:41454", "streamID": "65a05859", "rpc": "FormContract", "elapsed": "1.626044ms"}
+2026-10-31T15:22:39Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39126", "streamID": "494738a6", "rpc": "LatestRevision", "elapsed": "185.156µs"}
+2026-10-31T15:22:39Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39138", "streamID": "7e928e86", "rpc": "Settings", "elapsed": "90.573µs"}
+2026-10-31T15:22:39Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39154", "streamID": "085ab006", "rpc": "LatestRevision", "elapsed": "141.338µs"}
+2026-10-31T15:22:40Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39170", "streamID": "fd0ba63d", "rpc": "AccountBalance", "elapsed": "68.339µs"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39176", "streamID": "01b0cfc8", "rpc": "AccountBalance", "elapsed": "65.933µs"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39180", "streamID": "6db4ab90", "rpc": "LatestRevision", "elapsed": "128.624µs"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39182", "streamID": "92ec0611", "rpc": "FundAccounts", "elapsed": "553.034µs"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39186", "streamID": "1177e096", "rpc": "LatestRevision", "elapsed": "113.388µs"}
+2026-10-31T15:22:41Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39198", "streamID": "e1a214e0", "rpc": "FundAccounts", "elapsed": "378.234µs"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39208", "streamID": "0f0bb389", "rpc": "LatestRevision", "elapsed": "130.28µs"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39216", "streamID": "cc2b2f21", "rpc": "Settings", "elapsed": "92.301µs"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39222", "streamID": "a11c114c", "rpc": "WriteSector", "elapsed": "29.448378ms"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39222", "streamID": "34b2016d", "rpc": "AppendSectors", "elapsed": "1.057018ms"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39238", "streamID": "2bbfb067", "rpc": "LatestRevision", "elapsed": "103.424µs"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39244", "streamID": "6f5634eb", "rpc": "WriteSector", "elapsed": "24.099487ms"}
+2026-10-31T15:22:44Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:39244", "streamID": "d387143b", "rpc": "AppendSectors", "elapsed": "1.330459ms"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:52Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:22:56Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:00Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:04Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:07Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:34662", "streamID": "d453bea4", "rpc": "ReadSector", "elapsed": "14.826607ms"}
+2026-10-31T15:23:08Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:34662", "streamID": "c872c6d2", "rpc": "ReadSector", "elapsed": "17.189831ms"}
+2026-10-31T15:23:08Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:13Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:17Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:21Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:25Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:29Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:33Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:37Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:41Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:45Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:49Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:53Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:23:57Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:01Z	WARN	certificates.nomad	failed to refresh certificate	{"domain": "2nefac186cc6b61d5794mk5aenjodclg9d51v1taskdn7invuhu0.sia.host", "error": "failed to issue certificate: failed to send request: Post \"https://nomad.sia.host/api/certificate\": dial tcp: lookup nomad.sia.host on 127.0.0.11:53: server misbehaving"}
+2026-10-31T15:24:01Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:02Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:46504", "streamID": "b6f1d8f5", "rpc": "ReadSector", "elapsed": "8.357788ms"}
+2026-10-31T15:24:02Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:46510", "streamID": "b7538a90", "rpc": "ReadSector", "elapsed": "9.140626ms"}
+2026-10-31T15:24:05Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:09Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:13Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:18Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:22Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:26Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:30Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:34Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:38Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:42Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:46Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:50Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:54Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:24:56Z	INFO	rhp4.siamux	RPC success	{"peerAddress": "172.18.0.3:42222", "streamID": "a2d2939a", "rpc": "ReadSector", "elapsed": "12.5991ms"}
+2026-10-31T15:24:58Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:02Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:06Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:10Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:14Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:18Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:23Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:27Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:31Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:35Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:39Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:43Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:47Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:51Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:55Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:25:59Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:03Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:07Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:11Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:19Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:23Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:27Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:32Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:36Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:40Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:44Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:52Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:26:56Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:00Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:04Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:08Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:12Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:16Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:20Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:24Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:28Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:32Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:37Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:41Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:45Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:49Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:53Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:27:57Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:01Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:01Z	WARN	certificates.nomad	failed to refresh certificate	{"domain": "2nefac186cc6b61d5794mk5aenjodclg9d51v1taskdn7invuhu0.sia.host", "error": "failed to issue certificate: failed to send request: Post \"https://nomad.sia.host/api/certificate\": dial tcp: lookup nomad.sia.host on 127.0.0.11:53: server misbehaving"}
+2026-10-31T15:28:05Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:09Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:13Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:17Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:21Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:25Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:29Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:33Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:37Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:41Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:46Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:50Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:54Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:28:58Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:02Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:06Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:10Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:14Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:18Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:22Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:26Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:30Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:34Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:38Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:42Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:46Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:51Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:55Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:29:59Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:03Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:07Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:11Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:19Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:23Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:27Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:31Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:35Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:39Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:43Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:47Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:51Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:30:56Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:00Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:04Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:08Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:12Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:16Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:20Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:24Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:28Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:32Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:36Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:40Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:44Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:52Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:31:56Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:00Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:05Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:09Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:13Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:17Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:21Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:25Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:29Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:33Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:37Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:41Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:45Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:49Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:53Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:32:57Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:01Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:05Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:10Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:14Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:18Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:22Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:26Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:30Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:34Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:38Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:42Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:46Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:50Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:54Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:33:58Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:02Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:06Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:10Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:19Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:23Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:27Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:31Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:35Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:39Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:43Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:47Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:51Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:55Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:34:59Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:03Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:07Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:11Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:15Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:19Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:24Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:28Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:32Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:36Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:40Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:44Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:48Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:52Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:35:56Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:00Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:01Z	WARN	certificates.nomad	failed to refresh certificate	{"domain": "2nefac186cc6b61d5794mk5aenjodclg9d51v1taskdn7invuhu0.sia.host", "error": "failed to issue certificate: failed to send request: Post \"https://nomad.sia.host/api/certificate\": dial tcp: lookup nomad.sia.host on 127.0.0.11:53: server misbehaving"}
+2026-10-31T15:36:04Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:08Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:12Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:16Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:20Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:24Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:29Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:33Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:37Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:41Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:45Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:49Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:53Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:36:57Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:01Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:05Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:09Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:13Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:17Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:21Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:25Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:29Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:33Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:38Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:42Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:46Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:50Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:54Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:37:58Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:02Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:06Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:10Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:14Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:18Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:22Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:26Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:30Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:34Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:38Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:43Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:47Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:51Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:55Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:59Z	ERROR	settings	failed to get certificate for RHP4 net address	{"error": "certificates not initialized"}
+2026-10-31T15:38:59.905 INFO     [node04][repair:COMPLETE] all nodes reached height 480 and agree on the non-renter tip
+2026-10-31T15:39:09.920 INFO     [node04][scenario] scenario 1 exited with status 0
+2026-10-31T15:39:09Z	INFO	shutting down...
+[Knode04-1 exited with code 0

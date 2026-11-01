@@ -23,14 +23,8 @@ WORKDIR /opt/sia-lab
 EXPOSE 9980/tcp 9981/tcp 9984/tcp 9984/udp 10980/tcp 10981/tcp
 ENTRYPOINT ["/usr/bin/tini", "--", "/opt/sia-lab/entrypoint.sh"]
 
-FROM runtime-common AS renter-unmodified-runtime
-ENV RENTERD_VARIANT=unmodified
-COPY bin/renterd-unmodified /usr/local/bin/renterd
-COPY bin/walletd /usr/local/bin/walletd
-
-FROM runtime-common AS renter-modified-runtime
-ENV RENTERD_VARIANT=modified
-COPY bin/renterd-modified /usr/local/bin/renterd
+FROM runtime-common AS renter-runtime
+COPY bin/renterd /usr/local/bin/renterd
 COPY bin/walletd /usr/local/bin/walletd
 
 FROM runtime-common AS host-runtime

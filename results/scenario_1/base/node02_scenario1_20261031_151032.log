@@ -1,0 +1,32 @@
+2026-10-31T14:10:32.614 INFO     [node02][configure] Repair risk policy unavailable; observing original fixed-health behavior.
+2026-10-31T14:10:32Z	INFO	renterd	{"version": "52de587", "network": "zen", "commit": "52de587", "buildDate": "2026-10-31T14:04:20Z", "config": "/run/sia-lab/renterd.yml"}
+2026-10-31T14:10:32Z	INFO	sql	Using SQLite version 3.53.2
+2026-10-31T14:10:32Z	INFO	api: Listening on [::]:9980
+2026-10-31T14:10:32Z	INFO	autopilot.autopilot	autopilot is waiting on the bus to connect to peers...
+2026-10-31T14:10:32Z	INFO	bus: Listening on [::]:9981
+2026-10-31T14:10:33Z	INFO	autopilot.autopilot	autopilot loop trigger is scheduled for when the wallet receives a deposit
+2026-10-31T14:10:33Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:10:33Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": false, "threads": 4, "cutoff": "2026-10-30T14:10:33Z"}
+2026-10-31T14:10:33Z	INFO	autopilot.autopilot	autopilot is waiting for consensus to sync...
+2026-10-31T14:10:33Z	INFO	autopilot.scanner	no hosts config set, skipping removal of offline hosts
+2026-10-31T14:10:33Z	INFO	autopilot.scanner	scan finished	{"force": false, "duration": "889.286µs", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:10:39Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:10:39Z"}
+2026-10-31T14:10:39Z	INFO	autopilot.scanner	no hosts config set, skipping removal of offline hosts
+2026-10-31T14:10:39Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "546.695µs", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:10:39Z	INFO	autopilot.autopilot	autopilot is waiting to be enabled...
+2026-10-31T14:10:39.911 INFO     [node02][bootstrap] initial private blockchain reached height 200; tip=0ac6d184e651f18b0b35a008f996eb0cee8c5bd4de1b6b3d97bff14fa497f00b; all selected modern daemons are synchronized
+2026-10-31T14:10:44.762 INFO     [node02][scenario] running scenario 1
+2026-10-31T14:10:44.768 INFO     [node02][repair:START] scenario=1; role=renterd; startHeight=240; finalHeight=480
+2026-10-31T14:27:35.323 INFO     [node02][repair:COMPLETE] all nodes reached height 480 and agree on the non-renter tip
+2026-10-31T14:27:45.335 INFO     [node02][scenario] scenario 1 exited with status 0
+2026-10-31T14:27:45Z	INFO	Shutting down...
+2026-10-31T14:27:45Z	INFO	autopilot.autopilot	autopilot stopped before it was able to confirm it was enabled in the bus
+2026-10-31T14:27:45Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:27:45Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:27:45Z	INFO	autopilot.migrator.accounts	successfully saved 0 accounts
+2026-10-31T14:27:45Z	INFO	Autopilot shut down successfully
+2026-10-31T14:27:45Z	INFO	worker.worker.accounts	successfully saved 0 accounts
+2026-10-31T14:27:45Z	INFO	Worker shut down successfully
+2026-10-31T14:27:45Z	INFO	Bus shut down successfully
+2026-10-31T14:27:45Z	INFO	HTTP Server shut down successfully
+[Knode02-1 exited with code 0

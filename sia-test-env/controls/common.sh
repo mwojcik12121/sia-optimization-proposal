@@ -34,14 +34,6 @@ _control_role_for_node() {
   esac
 }
 
-_control_renterd_variant_for_node() {
-  case "$1" in
-    node01) printf 'modified\n' ;;
-    node02) printf 'unmodified\n' ;;
-    *) return 64 ;;
-  esac
-}
-
 _control_selected_nodes() {
   local destination="$1" node
   local -a parsed

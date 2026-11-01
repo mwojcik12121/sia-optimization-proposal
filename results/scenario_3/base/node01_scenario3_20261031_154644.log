@@ -1,0 +1,301 @@
+2026-10-31T14:46:44.817 INFO     [node01][configure] Repair risk policy unavailable; observing original fixed-health behavior.
+2026-10-31T14:46:44Z	INFO	renterd	{"version": "52de587", "network": "zen", "commit": "52de587", "buildDate": "2026-10-31T14:04:20Z", "config": "/run/sia-lab/renterd.yml"}
+2026-10-31T14:46:44Z	INFO	sql	Using SQLite version 3.53.2
+2026-10-31T14:46:45Z	INFO	api: Listening on [::]:9980
+2026-10-31T14:46:45Z	INFO	autopilot.autopilot	autopilot is waiting on the bus to connect to peers...
+2026-10-31T14:46:45Z	INFO	bus: Listening on [::]:9981
+2026-10-31T14:46:46Z	INFO	autopilot.autopilot	autopilot loop trigger is scheduled for when the wallet receives a deposit
+2026-10-31T14:46:46Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:46:46Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": false, "threads": 4, "cutoff": "2026-10-30T14:46:46Z"}
+2026-10-31T14:46:46Z	INFO	autopilot.autopilot	autopilot is waiting for consensus to sync...
+2026-10-31T14:46:46Z	INFO	autopilot.scanner	no hosts config set, skipping removal of offline hosts
+2026-10-31T14:46:46Z	INFO	autopilot.scanner	scan finished	{"force": false, "duration": "1.189382ms", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:46:52Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:46:52Z"}
+2026-10-31T14:46:52Z	INFO	autopilot.scanner	no hosts config set, skipping removal of offline hosts
+2026-10-31T14:46:52Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "860.979µs", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:46:52Z	INFO	autopilot.autopilot	autopilot is waiting to be enabled...
+2026-10-31T14:46:52.118 INFO     [node01][bootstrap] initial private blockchain reached height 200; tip=38f3d84bbbe9086195ebd8739f3c8f6fe7670776765b6fcbd8d5aabb74f8c5fa; all selected modern daemons are synchronized
+2026-10-31T14:46:56.769 INFO     [node01][scenario] running scenario 3
+2026-10-31T14:46:56.775 INFO     [node01][repair:START] scenario=3; role=renterd; startHeight=240; finalHeight=480
+2026-10-31T14:46:57.070 INFO     [node01][repair:READY] renter configured for four contracts and 2-of-4 full slabs
+2026-10-31T14:46:58Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:46:58Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	performing contract maintenance
+2026-10-31T14:46:58Z	WARN	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896.calculateMinScore	min host score is set to the smallest non-zero float because there are no candidate hosts
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	host checks completed
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	fetching active contracts
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	done fetching active contracts	{"elapsed": "168.584µs"}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	fetching revisions
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	done fetching all revisions	{"elapsed": "4.62µs", "contracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	checking existing contracts	{"contracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:46:58Z	WARN	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	insufficient candidate hosts to form the desired amount of new contracts	{"candidates": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	done forming contracts	{"candidates": 0, "formedContracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.bddefcc7bb7b1afe281451f3011a1896	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:46:58Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	recomputed slab health in 727.329µs
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:46:58Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	performing contract maintenance
+2026-10-31T14:46:58Z	WARN	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262.calculateMinScore	min host score is set to the smallest non-zero float because there are no candidate hosts
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	host checks completed
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	fetching active contracts
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	done fetching active contracts	{"elapsed": "114.27µs"}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	fetching revisions
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	done fetching all revisions	{"elapsed": "4.332µs", "contracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	checking existing contracts	{"contracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:46:58Z	WARN	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	insufficient candidate hosts to form the desired amount of new contracts	{"candidates": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	done forming contracts	{"candidates": 0, "formedContracts": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.contractor.performContractMaintenance.a0c38e6df6898362ff628ef70ffe7262	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:46:58Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	recomputed slab health in 486.968µs
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:46:58Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:02Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:47:02Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:47:02Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:47:02Z"}
+2026-10-31T14:47:02Z	INFO	autopilot.scanner	removing offline hosts	{"maxDowntime": "24h0m0s", "maxConsecutiveScanFailures": 100}
+2026-10-31T14:47:02Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "548.09µs", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:47:02Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	performing contract maintenance
+2026-10-31T14:47:02Z	WARN	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235.calculateMinScore	min host score is set to the smallest non-zero float because there are no candidate hosts
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	host checks completed
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	fetching active contracts
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	done fetching active contracts	{"elapsed": "146.825µs"}
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	fetching revisions
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	done fetching all revisions	{"elapsed": "5.479µs", "contracts": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	checking existing contracts	{"contracts": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:47:02Z	WARN	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	insufficient candidate hosts to form the desired amount of new contracts	{"candidates": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	done forming contracts	{"candidates": 0, "formedContracts": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.contractor.performContractMaintenance.2258da23464844cbdaa01ea62df22235	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:47:02Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:47:02Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:47:02Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:47:02Z	INFO	autopilot.migrator	recomputed slab health in 507.431µs
+2026-10-31T14:47:02Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:47:02Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:07Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:47:07Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:47:07Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:47:07Z"}
+2026-10-31T14:47:07Z	INFO	autopilot.scanner	removing offline hosts	{"maxDowntime": "24h0m0s", "maxConsecutiveScanFailures": 100}
+2026-10-31T14:47:07Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "625.416µs", "pingMSAvg": 0, "pingMSP90": 0, "removed": 0, "scanned": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:47:07Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	performing contract maintenance
+2026-10-31T14:47:07Z	WARN	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43.calculateMinScore	min host score is set to the smallest non-zero float because there are no candidate hosts
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	host checks completed
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	fetching active contracts
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	done fetching active contracts	{"elapsed": "118.134µs"}
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	fetching revisions
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	done fetching all revisions	{"elapsed": "5.343µs", "contracts": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	checking existing contracts	{"contracts": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:47:07Z	WARN	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	insufficient candidate hosts to form the desired amount of new contracts	{"candidates": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	done forming contracts	{"candidates": 0, "formedContracts": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.contractor.performContractMaintenance.3169ebb97b060d99e58f63a5f7ae2f43	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:47:07Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:47:07Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:47:07Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:47:07Z	INFO	autopilot.migrator	recomputed slab health in 664.041µs
+2026-10-31T14:47:07Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:47:07Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:12Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:47:12Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:47:12Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:47:12Z"}
+2026-10-31T14:47:12Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:47:12Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:47:12Z	INFO	autopilot.scanner	removing offline hosts	{"maxDowntime": "24h0m0s", "maxConsecutiveScanFailures": 100}
+2026-10-31T14:47:12Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "5.945925ms", "pingMSAvg": 1.5, "pingMSP90": 2, "removed": 0, "scanned": 4}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	performing contract maintenance
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7.calculateMinScore	finished computing minScore	{"candidates": 4, "minScore": 0.00000005821882885475924, "numContracts": 4, "lowestScore": 0.000029109414427379623}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	host checks completed
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	fetching active contracts
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	done fetching active contracts	{"elapsed": "205.877µs"}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	fetching revisions
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	done fetching all revisions	{"elapsed": "6.75µs", "contracts": 0}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	checking existing contracts	{"contracts": 0}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	done forming contracts	{"candidates": 4, "formedContracts": 0}
+2026-10-31T14:47:12Z	INFO	autopilot.contractor.performContractMaintenance.134cf9950c065be2475468dec02fb5e7	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:47:12Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:47:12Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:47:12Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:47:12Z	INFO	autopilot.migrator	recomputed slab health in 517.944µs
+2026-10-31T14:47:12Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:47:12Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:17Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:47:17Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:47:17Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:47:17Z"}
+2026-10-31T14:47:17Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:47:17Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:47:17Z	INFO	autopilot.scanner	removing offline hosts	{"maxDowntime": "24h0m0s", "maxConsecutiveScanFailures": 100}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	performing contract maintenance
+2026-10-31T14:47:17Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "7.184113ms", "pingMSAvg": 1.625, "pingMSP90": 2, "removed": 0, "scanned": 4}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e.calculateMinScore	finished computing minScore	{"candidates": 4, "minScore": 0.00000007911070861714048, "numContracts": 4, "lowestScore": 0.00003955535430857024}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	host checks completed
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	fetching active contracts
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	done fetching active contracts	{"elapsed": "188.014µs"}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	fetching revisions
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	done fetching all revisions	{"elapsed": "6.813µs", "contracts": 0}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	checking existing contracts	{"contracts": 0}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	formation succeeded	{"candidates": 4, "hostKey": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f", "hostKey": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f", "hostVersion": "v5.1.0", "hostRelease": "hostd 671b302", "fcid": "d6b963441d8c43d4c76167a3c2a8a6df457e3bef2cd31190dd26d2d622a7cc52", "renterFunds": "28.342016272723761063788544 SC", "collateral": "23.871532545474070038183936 SC"}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	formation succeeded	{"candidates": 4, "hostKey": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568", "hostKey": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568", "hostVersion": "v5.1.0", "hostRelease": "hostd 671b302", "fcid": "6b9e6f0f1327847684286c9882cd37a6c87ca01a370b343e9064e5889d52d5c2", "renterFunds": "28.342016272723761063788544 SC", "collateral": "23.871532545474070038183936 SC"}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	formation succeeded	{"candidates": 4, "hostKey": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032", "hostKey": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032", "hostVersion": "v5.1.0", "hostRelease": "hostd 671b302", "fcid": "a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca", "renterFunds": "28.342016272723761063788544 SC", "collateral": "23.871532545474070038183936 SC"}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	formation succeeded	{"candidates": 4, "hostKey": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815", "hostKey": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815", "hostVersion": "v5.1.0", "hostRelease": "hostd 671b302", "fcid": "2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597", "renterFunds": "28.342016272723761063788544 SC", "collateral": "23.871532545474070038183936 SC"}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	done forming contracts	{"candidates": 4, "formedContracts": 4}
+2026-10-31T14:47:17Z	INFO	autopilot.contractor.performContractMaintenance.ffbcb4874e07e9e6248d3e6bb2d4ca3e	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:47:17Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:47:17Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:47:17Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:47:17Z	INFO	autopilot.migrator	recomputed slab health in 493.127µs
+2026-10-31T14:47:17Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:47:17Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:22.432 INFO     [node01][repair:READY] renter has four good contracts
+2026-10-31T14:47:22Z	ERROR	worker.worker	failed to upload object	{"error": "failed to upload slab: launched=4 uploaded=0 remaining=4 inflight=0 pending=4 uploaders=4 errors=4 \n908fbb6a: failed to upload sector to contract 2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597; not enough funds (5); account requires resync\na92196e6: failed to upload sector to contract d6b963441d8c43d4c76167a3c2a8a6df457e3bef2cd31190dd26d2d622a7cc52; not enough funds (5); account requires resync\na80b0f74: failed to upload sector to contract a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca; not enough funds (5); account requires resync\ne28cfd38: failed to upload sector to contract 6b9e6f0f1327847684286c9882cd37a6c87ca01a370b343e9064e5889d52d5c2; not enough funds (5); account requires resync", "key": "/fixture.bin", "bucket": "repair-risk-tests"}
+2026-10-31T14:47:22Z	INFO	autopilot.autopilot	autopilot iteration triggered
+2026-10-31T14:47:22Z	INFO	autopilot.autopilot	autopilot iteration starting
+2026-10-31T14:47:22Z	INFO	autopilot.scanner	scan started	{"batch": 100, "force": true, "threads": 4, "cutoff": "2026-10-31T14:47:22Z"}
+2026-10-31T14:47:22Z	INFO	autopilot.wallet	performing wallet maintenance
+2026-10-31T14:47:22Z	INFO	autopilot.wallet	wallet maintenance succeeded, txns []
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	performing contract maintenance
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9.calculateMinScore	finished computing minScore	{"candidates": 4, "minScore": 0.000000079798324589987, "numContracts": 4, "lowestScore": 0.0000398991622949935}
+2026-10-31T14:47:22Z	INFO	autopilot.scanner	removing offline hosts	{"maxDowntime": "24h0m0s", "maxConsecutiveScanFailures": 100}
+2026-10-31T14:47:22Z	INFO	autopilot.scanner	scan finished	{"force": true, "duration": "4.952845ms", "pingMSAvg": 1.5, "pingMSP90": 2, "removed": 0, "scanned": 4}
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	host checks completed
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	fetching active contracts
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	done fetching active contracts	{"elapsed": "271.642µs"}
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	fetching revisions
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	done fetching all revisions	{"elapsed": "2.08993ms", "contracts": 4}
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	checking existing contracts	{"contracts": 4}
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	contract checks done	{"refreshed": 0, "renewed": 0, "updated": 0}
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	already have enough contracts, no need to form new ones
+2026-10-31T14:47:22Z	INFO	autopilot.contractor.performContractMaintenance.6efee4d15963c65c69aa1a10b6c352a9	revision broadcast completed	{"successful": 0, "failed": 0}
+2026-10-31T14:47:22Z	INFO	autopilot.autopilot	pruning disabled
+2026-10-31T14:47:22Z	INFO	autopilot.autopilot	autopilot iteration ended
+2026-10-31T14:47:22Z	INFO	autopilot.migrator	performing migrations
+2026-10-31T14:47:22Z	INFO	autopilot.migrator	recomputed slab health in 422.813µs
+2026-10-31T14:47:22Z	INFO	autopilot.migrator	0 potential slabs fetched for migration
+2026-10-31T14:47:22Z	INFO	autopilot.migrator	0 slabs to migrate
+2026-10-31T14:47:23Z	INFO	bus.chainsubscriber	contract state changed: pending -> active	{"fcid": "d6b963441d8c43d4c76167a3c2a8a6df457e3bef2cd31190dd26d2d622a7cc52", "reason": "contract confirmed"}
+2026-10-31T14:47:23Z	INFO	bus.chainsubscriber	contract state changed: pending -> active	{"fcid": "6b9e6f0f1327847684286c9882cd37a6c87ca01a370b343e9064e5889d52d5c2", "reason": "contract confirmed"}
+2026-10-31T14:47:23Z	INFO	bus.chainsubscriber	contract state changed: pending -> active	{"fcid": "a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca", "reason": "contract confirmed"}
+2026-10-31T14:47:23Z	INFO	bus.chainsubscriber	contract state changed: pending -> active	{"fcid": "2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597", "reason": "contract confirmed"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts.ed25519:90a62ce6bddebbd238c1412e550142499e8bed00bc50f0fa97500771a96bb244	account balance was increased	{"account": "90a62ce6bddebbd238c1412e550142499e8bed00bc50f0fa97500771a96bb244", "host": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts	successfully refilled account for host	{"hostKey": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts.ed25519:bdcb0e8b7436865ae79ff8282b1c589b6c48afc1ce7d0e032ebd51aaa01b1577	account balance was increased	{"account": "bdcb0e8b7436865ae79ff8282b1c589b6c48afc1ce7d0e032ebd51aaa01b1577", "host": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts	successfully refilled account for host	{"hostKey": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts.ed25519:092594f2d056a961fb737c8729baa05f253f49583246d17848067966864ae4c7	account balance was increased	{"account": "092594f2d056a961fb737c8729baa05f253f49583246d17848067966864ae4c7", "host": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	autopilot.migrator.accounts	successfully refilled account for host	{"hostKey": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts.ed25519:071e59574fc4193e31d766b25dba7ef5773250f75f7e5b20cf3f06a9a84654fb	account balance was increased	{"account": "071e59574fc4193e31d766b25dba7ef5773250f75f7e5b20cf3f06a9a84654fb", "host": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts	successfully refilled account for host	{"hostKey": "ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts.ed25519:296dffe9e46c68fc007c88b8480e825573b32f327bbd1afc32b74b380bdb8553	account balance was increased	{"account": "296dffe9e46c68fc007c88b8480e825573b32f327bbd1afc32b74b380bdb8553", "host": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts	successfully refilled account for host	{"hostKey": "ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts.ed25519:8530b7e3d5afed36a07260cfdbe5ca7d517f6a82daa39069154f8c15bba6a43e	account balance was increased	{"account": "8530b7e3d5afed36a07260cfdbe5ca7d517f6a82daa39069154f8c15bba6a43e", "host": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:25Z	INFO	worker.worker.accounts	successfully refilled account for host	{"hostKey": "ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032"}
+2026-10-31T14:47:52Z	INFO	worker.worker.accounts.ed25519:aed53ae24fe4531bba170df11e702271991b8865334406a4582e5c551cb78a7c	account balance was increased	{"account": "aed53ae24fe4531bba170df11e702271991b8865334406a4582e5c551cb78a7c", "host": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:52Z	INFO	worker.worker.accounts	successfully refilled account for host	{"hostKey": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568"}
+2026-10-31T14:47:52Z	INFO	autopilot.migrator.accounts.ed25519:41b9651fd2fadca7e21c7d3810f510e329d19a20d8a2121b1ad3a96f84ca1cea	account balance was increased	{"account": "41b9651fd2fadca7e21c7d3810f510e329d19a20d8a2121b1ad3a96f84ca1cea", "host": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568", "amt": "1000000000000000000000000", "balanceBefore": "1000000000000000000000000", "balanceAfter": "1000000000000000000000000"}
+2026-10-31T14:47:52Z	INFO	autopilot.migrator.accounts	successfully refilled account for host	{"hostKey": "ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568"}
+2026-10-31T14:47:52.989 INFO     [node01][repair:READY] uploaded and verified 16777216 bytes
+2026-10-31T14:48:01.455 INFO     [node01][repair:ACTION] scenario=3; marking two contracts bad
+2026-10-31T14:48:03.525 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-good-contracts; method=GET; path=/bus/contracts?filtermode=good; curlStatus=0; httpStatus=200; request=<empty>; response=[{"id":"a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca","hostKey":"ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true},{"id":"2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597","hostKey":"ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true}]; stderr=<empty>
+2026-10-31T14:48:03.550 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-bad-contracts; method=GET; path=/bus/contracts?filtermode=bad; curlStatus=0; httpStatus=400; request=<empty>; response=invalid filter mode 'bad', must be one of [active, archived, all, good]; stderr=<empty>
+2026-10-31T14:48:03.621 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-1-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:03.679 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-1-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:05.751 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-2-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:05.807 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-2-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:07.882 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-3-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:07.934 INFO     [node01][repair:OBSERVED] label=scenario-3-two-bad-contracts-sample-3-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:07.935 INFO     [node01][repair:ACTION] scenario=3; marking third contract a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca bad
+2026-10-31T14:48:09.990 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-good-contracts; method=GET; path=/bus/contracts?filtermode=good; curlStatus=0; httpStatus=200; request=<empty>; response=[{"id":"2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597","hostKey":"ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true}]; stderr=<empty>
+2026-10-31T14:48:10.017 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-bad-contracts; method=GET; path=/bus/contracts?filtermode=bad; curlStatus=0; httpStatus=400; request=<empty>; response=invalid filter mode 'bad', must be one of [active, archived, all, good]; stderr=<empty>
+2026-10-31T14:48:10.092 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-1-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:10.145 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-1-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:12.226 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-2-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:12.283 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-2-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:14.369 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-3-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1,"exitThreshold":0.25,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:14.427 INFO     [node01][repair:OBSERVED] label=scenario-3-three-bad-contracts-sample-3-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":-1,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:14.427 INFO     [node01][repair:ACTION] scenario=3; restoring all contracts
+2026-10-31T14:48:16.543 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-good-contracts; method=GET; path=/bus/contracts?filtermode=good; curlStatus=0; httpStatus=200; request=<empty>; response=[{"id":"d6b963441d8c43d4c76167a3c2a8a6df457e3bef2cd31190dd26d2d622a7cc52","hostKey":"ed25519:a92196e68ad3e08e330debca5787a0284b0a81eef9e2626e4ffac04ee6dd208f","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true},{"id":"6b9e6f0f1327847684286c9882cd37a6c87ca01a370b343e9064e5889d52d5c2","hostKey":"ed25519:e28cfd3810787e93d06dfaf8191f1a51bfcaa66425f762d83cf6cb451607a568","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3141901559213171154944"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true},{"id":"a80a3504faff656e46544e31955065f8c83c49432c111ef26e4668bfe2d3b0ca","hostKey":"ed25519:a80b0f7420918399245cf573d533503a2473b333b0cfe98ce97c03f004eb4032","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true},{"id":"2278f3e2d137249aae3386cf96420f8a48719df87d4f22e3b7a3b05745138597","hostKey":"ed25519:908fbb6ad90ccd402bd1c9c85b88fb991490687ae8a265c9687aa034b5d86815","proofHeight":0,"renewedFrom":"0000000000000000000000000000000000000000000000000000000000000000","revisionHeight":204,"revisionNumber":4,"size":8388608,"startHeight":203,"state":"active","usability":"good","windowStart":11203,"windowEnd":11347,"contractPrice":"200000000000000000000000","initialRenterFunds":"28342016272723761063788544","spending":{"deletions":"0","fundAccount":"2000000000000000000000000","sectorRoots":"0","uploads":"3142696287810153881600"},"renewedTo":"0000000000000000000000000000000000000000000000000000000000000000","v2":true}]; stderr=<empty>
+2026-10-31T14:48:16.571 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-bad-contracts; method=GET; path=/bus/contracts?filtermode=bad; curlStatus=0; httpStatus=400; request=<empty>; response=invalid filter mode 'bad', must be one of [active, archived, all, good]; stderr=<empty>
+2026-10-31T14:48:16.647 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-1-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1e-06,"exitThreshold":2.5e-07,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:16.699 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-1-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:18.770 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-2-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1e-06,"exitThreshold":2.5e-07,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:18.823 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-2-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:20.901 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-3-risk-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000,"risk":{"policy":{"enabled":true,"entryThreshold":1e-06,"exitThreshold":2.5e-07,"safetyMargin":300000,"modelTTL":30000,"defaultRepairTime":5000,"maxQueueDelay":1800000,"maxHorizon":3600000},"queueDepth":0,"parallelism":1,"repairTime":5000,"blockInterval":250}}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:20.956 INFO     [node01][repair:OBSERVED] label=scenario-3-contracts-restored-sample-3-fixed-request; method=POST; path=/bus/slabs/migration; curlStatus=0; httpStatus=200; request={"healthCutoff":0.75,"limit":1000}; response={"slabs":null}; stderr=<empty>
+2026-10-31T14:48:20.972 INFO     [node01][repair:ACTION] blocked storage traffic to: node03 node04
+2026-10-31T14:48:21.219 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-1-two-hosts-blocked; attempt=1; exitStatus=0; durationSeconds=1; filePresent=true; bytes=16777216; sha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=true; output=<empty>
+2026-10-31T14:48:21.255 INFO     [node01][repair:ACTION] blocked storage traffic to: node03 node04 node05
+2026-10-31T14:48:21Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 0}
+2026-10-31T14:48:21Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+00000000: not enough hosts available to download the slab: no more hosts
+2026-10-31T14:48:21.380 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-1-three-hosts-blocked; attempt=1; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:21Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 0}
+2026-10-31T14:48:21Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+00000000: not enough hosts available to download the slab: no more hosts
+2026-10-31T14:48:21.504 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-1-three-hosts-blocked; attempt=2; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:21Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 1}
+2026-10-31T14:48:21Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+00000000: not enough hosts available to download the slab: no more hosts
+2026-10-31T14:48:21.642 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-1-three-hosts-blocked; attempt=3; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:21.656 INFO     [node01][repair:ACTION] restored storage traffic to all hosts
+2026-10-31T14:48:21.915 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-1-all-hosts-restored; attempt=1; exitStatus=0; durationSeconds=0; filePresent=true; bytes=16777216; sha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=true; output=<empty>
+2026-10-31T14:48:21.937 INFO     [node01][repair:ACTION] blocked storage traffic to: node03 node04
+2026-10-31T14:48:22.214 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-2-two-hosts-blocked; attempt=1; exitStatus=0; durationSeconds=1; filePresent=true; bytes=16777216; sha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=true; output=<empty>
+2026-10-31T14:48:22.243 INFO     [node01][repair:ACTION] blocked storage traffic to: node03 node04 node05
+2026-10-31T14:48:22Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 0}
+2026-10-31T14:48:22Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+00000000: not enough hosts available to download the slab: no more hosts
+2026-10-31T14:48:22.370 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-2-three-hosts-blocked; attempt=1; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:22Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 1}
+2026-10-31T14:48:22Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+00000000: not enough hosts available to download the slab: no more hosts
+2026-10-31T14:48:22.491 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-2-three-hosts-blocked; attempt=2; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:22Z	ERROR	worker.worker.downloadmanager	slab download failed	{"index": 1}
+2026-10-31T14:48:22Z	ERROR	worker.worker	failed to download slab: completed=1 inflight=0 launched=4 downloaders=4 errors=4 
+00000000: not enough hosts available to download the slab: no more hosts
+e28cfd38: failed to dial node04:9984 with all methods
+908fbb6a: failed to dial node05:9984 with all methods
+a80b0f74: failed to dial node03:9984 with all methods
+2026-10-31T14:48:22.627 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-2-three-hosts-blocked; attempt=3; exitStatus=18; durationSeconds=0; filePresent=false; bytes=0; sha256=<none>; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=false; output=curl: (18) transfer closed with 16777216 bytes remaining to read
+2026-10-31T14:48:22.645 INFO     [node01][repair:ACTION] restored storage traffic to all hosts
+2026-10-31T14:48:22.908 INFO     [node01][repair:OBSERVED] label=scenario-3-cycle-2-all-hosts-restored; attempt=1; exitStatus=0; durationSeconds=0; filePresent=true; bytes=16777216; sha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; fixtureSha256=080acf35a507ac9849cfcba47dc2ad83e01b75663a516279c8b9d243b719643e; matchesFixture=true; output=<empty>
+2026-10-31T14:48:22.909 INFO     [node01][repair:OBSERVED] scenario=3; actions complete; inspect recorded API and download outcomes
+2026-10-31T15:04:12.574 INFO     [node01][repair:COMPLETE] all nodes reached height 480 and agree on the non-renter tip
+2026-10-31T15:04:22.689 INFO     [node01][scenario] scenario 3 exited with status 0
+2026-10-31T15:04:22Z	INFO	Shutting down...
+2026-10-31T15:04:22Z	INFO	autopilot.migrator.accounts	successfully saved 4 accounts
+2026-10-31T15:04:22Z	INFO	Autopilot shut down successfully
+2026-10-31T15:04:22Z	INFO	worker.worker.accounts	successfully saved 4 accounts
+2026-10-31T15:04:22Z	INFO	Worker shut down successfully
+2026-10-31T15:04:22Z	INFO	Bus shut down successfully
+2026-10-31T15:04:22Z	INFO	HTTP Server shut down successfully
+[Knode01-1 exited with code 0

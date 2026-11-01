@@ -15,7 +15,7 @@ package_cleanup() {
 
 package_create() {
   local input="$1" file archive
-  for file in hostd renterd-unmodified renterd-modified walletd BUILD_TAG BUILD_MANIFEST SHA256SUMS; do
+  for file in hostd renterd walletd BUILD_TAG BUILD_MANIFEST SHA256SUMS; do
     [[ -f "${input}/${file}" ]] || package_fail "Missing ${input}/${file}."
   done
   (cd "${input}" && sha256sum --check --strict SHA256SUMS) \
@@ -24,8 +24,7 @@ package_create() {
   mkdir -p "${ROOT_DIR}/bin"
   cp \
     "${input}/hostd" \
-    "${input}/renterd-unmodified" \
-    "${input}/renterd-modified" \
+    "${input}/renterd" \
     "${input}/walletd" \
     "${input}/BUILD_TAG" \
     "${input}/BUILD_MANIFEST" \
@@ -33,8 +32,7 @@ package_create() {
     "${PACKAGE_STAGE}/"
   chmod 0755 \
     "${PACKAGE_STAGE}/hostd" \
-    "${PACKAGE_STAGE}/renterd-unmodified" \
-    "${PACKAGE_STAGE}/renterd-modified" \
+    "${PACKAGE_STAGE}/renterd" \
     "${PACKAGE_STAGE}/walletd"
   chmod 0644 \
     "${PACKAGE_STAGE}/BUILD_TAG" \
@@ -44,7 +42,7 @@ package_create() {
   rm -f "${archive}"
   tar -C "${PACKAGE_STAGE}" -czf "${archive}" \
     BUILD_TAG BUILD_MANIFEST SHA256SUMS \
-    hostd renterd-unmodified renterd-modified walletd
+    hostd renterd walletd
 }
 
 (( $# == 1 )) || package_fail 'Usage: ./scripts/package-binaries.sh <compiled-output-directory>'

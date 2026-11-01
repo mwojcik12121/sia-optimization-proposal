@@ -1,0 +1,9 @@
+2026-10-31T14:46:44Z	[34mINFO[0m	loaded config file	{"path": "/run/sia-lab/walletd.yml"}
+2026-10-31T14:46:44Z	INFO	node started	{"network": "zen", "syncer": "[::]:9981", "http": "[::]:9980", "version": "fd695f7", "commit": "fd695f7"}
+2026-10-31T14:46:52.003 INFO     [node08][bootstrap] initial private blockchain reached height 200; tip=38f3d84bbbe9086195ebd8739f3c8f6fe7670776765b6fcbd8d5aabb74f8c5fa; all selected modern daemons are synchronized
+2026-10-31T14:46:57.471 INFO     [node08][scenario] running scenario 3
+2026-10-31T14:46:57.477 INFO     [node08][repair:START] scenario=3; role=walletd; startHeight=240; finalHeight=480
+2026-10-31T15:04:12.591 INFO     [node08][repair:COMPLETE] all nodes reached height 480 and agree on the non-renter tip
+2026-10-31T15:04:22.603 INFO     [node08][scenario] scenario 3 exited with status 0
+2026-10-31T15:04:22Z	INFO	shutting down
+[Knode08-1 exited with code 0

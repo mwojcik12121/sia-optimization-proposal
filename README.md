@@ -1,13 +1,14 @@
 # Sia security measure optimization proposal
 
 ## Contents
-1. Implementation of optimization suggestion
+1. Implementation of optimization suggestion (found [here](./sia-build-env/bin/renterd-2.9.3-modified/))
 2. Building environment used to create modified Sia binaries
 3. Testing environment used to check optimization's logic and performance
+4. Results generated from running tests on both original and modified version of binaries
 
 ## Optimization description
 
-\[to be added]
+Risk repair prediction formula based on historical data.
 
 ## Components' version
 
@@ -17,6 +18,6 @@
 * renterd: 2.9.3
 * walletd: 2.15.2
 
-## Notes
+## Note
 
 * Instructions and specification for each environment are added directly to the environment's directory

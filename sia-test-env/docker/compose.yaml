@@ -60,7 +60,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: renter-modified-runtime
+      target: renter-runtime
       network: none
       args:
         RUNTIME_TOOLS_IMAGE: "${RUNTIME_TOOLS_IMAGE:-sia-lab-runtime-tools:bookworm}"
@@ -78,7 +78,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: renter-unmodified-runtime
+      target: renter-runtime
       network: none
       args:
         RUNTIME_TOOLS_IMAGE: "${RUNTIME_TOOLS_IMAGE:-sia-lab-runtime-tools:bookworm}"
