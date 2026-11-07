@@ -658,7 +658,7 @@ repair_test_run() {
       case "${SCENARIO}" in
         1) _repair_test_scan_evidence ;;
         2) _repair_test_expiry_sequence ;;
-        3) _repair_test_source_boundary ;;
+        3) _repair_test_source_boundary ;;  # unimplemented
       esac
       _repair_notice OBSERVED "scenario=${SCENARIO}; actions complete; inspect recorded API and download outcomes"
       action_renter_create_bucket repair-tests-complete >/dev/null
